@@ -39,15 +39,8 @@
     padding: var(--pad);
   }
 
-  .svg-defs {
-    position: absolute;
-    width: 0; height: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
   /* ============================================================
-     STAGE — the blue box, always fits the screen
+     STAGE — blue box that always fits the screen
   ============================================================ */
   .stage {
     position: relative;
@@ -59,6 +52,7 @@
     isolation: isolate;
     display: flex;
     flex-direction: column;
+    gap: clamp(10px, 1.6vh, 20px);
     padding: clamp(16px, 2.2vw, 38px);
     padding-top:    max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-top));
     padding-bottom: max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-bottom));
@@ -66,9 +60,9 @@
     padding-right:  max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-right));
 
     background:
-      radial-gradient(120% 100% at 12% 0%,   rgba(37,99,235,.28) 0%, transparent 55%),
+      radial-gradient(120% 100% at 12% 0%,    rgba(37,99,235,.28) 0%, transparent 55%),
       radial-gradient(110% 110% at 100% 100%, rgba(124,58,237,.26) 0%, transparent 58%),
-      radial-gradient(90% 90% at 78% 6%,     rgba(6,182,212,.20) 0%, transparent 60%),
+      radial-gradient(90% 90% at 78% 6%,      rgba(6,182,212,.20) 0%, transparent 60%),
       linear-gradient(165deg, #060a16 0%, #0a1124 45%, #04070f 100%);
 
     border: 1px solid rgba(59,130,246,.20);
@@ -100,16 +94,18 @@
     pointer-events: none;
     will-change: transform;
   }
-  .blob-a { width: 46vmin; height: 46vmin; left: -8vmin;   top: -8vmin;    background: radial-gradient(circle, rgba(37,99,235,.55), transparent 68%);  animation: drift  24s ease-in-out infinite; }
-  .blob-b { width: 52vmin; height: 52vmin; right: -12vmin; top: -14vmin;   background: radial-gradient(circle, rgba(124,58,237,.48), transparent 68%); animation: drift2 30s ease-in-out infinite; }
+  .blob-a { width: 46vmin; height: 46vmin; left: -8vmin;   top: -8vmin;     background: radial-gradient(circle, rgba(37,99,235,.55), transparent 68%);  animation: drift  24s ease-in-out infinite; }
+  .blob-b { width: 52vmin; height: 52vmin; right: -12vmin; top: -14vmin;    background: radial-gradient(circle, rgba(124,58,237,.48), transparent 68%); animation: drift2 30s ease-in-out infinite; }
   .blob-c { width: 48vmin; height: 48vmin; right: 6vmin;   bottom: -18vmin; background: radial-gradient(circle, rgba(6,182,212,.42), transparent 68%); animation: drift3 27s ease-in-out infinite; }
 
   @keyframes drift  { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(6vmin,-4vmin) scale(1.08);} }
   @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(-7vmin,4vmin) scale(1.06);} }
   @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(4vmin,5vmin) scale(1.1);} }
 
-  .stage > * { position: relative; z-index: 1; }
+  /* layering above the background */
+  .stage > *:not(.blob) { position: relative; z-index: 1; }
 
+  /* ---------- badge row ---------- */
   .stage-top {
     flex: 0 0 auto;
     display: flex;
@@ -145,22 +141,30 @@
     50%     { opacity: .45; transform: scale(.72); }
   }
 
-  /* logo area takes all remaining vertical space */
-  .stage-logo {
-    position: relative;
-    flex: 1 1 auto;
+  /* ---------- LOGO AREA — flex-centred, SVG fills it ---------- */
+  .logo-area {
+    flex: 1 1 0;              /* grow/shrink, base 0 */
     min-height: 0;
-    margin: clamp(6px, 1.2vh, 18px) 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
-  .stage-logo svg {
-    position: absolute;
-    inset: 0;
+
+  .logo-area > svg {
+    display: block;
     width: 100%;
     height: 100%;
-    display: block;
+    max-width: 100%;
+    max-height: 100%;
   }
-  .logo-tall { display: none; }
 
+  /* visibility swap — high specificity so it always wins */
+  .logo-area > svg.logo-wide { display: block; }
+  .logo-area > svg.logo-tall { display: none; }
+
+  /* ---------- CTA row ---------- */
   .stage-cta {
     flex: 0 0 auto;
     display: flex;
@@ -177,7 +181,7 @@
   }
 
   /* ============================================================
-     BUTTON
+     REQUEST DEMO BUTTON
   ============================================================ */
   .btn-demo {
     position: relative;
@@ -465,8 +469,10 @@
       padding-top:    max(18px, env(safe-area-inset-top));
       padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
-    .logo-wide { display: none; }
-    .logo-tall { display: block; }
+
+    /* swap to tall logo */
+    .logo-area > svg.logo-wide { display: none; }
+    .logo-area > svg.logo-tall { display: block; }
 
     .modal-overlay { padding: 0; place-items: stretch; }
     .modal {
@@ -488,7 +494,6 @@
     .badge { padding: 6px 13px 6px 10px; font-size: 10px; }
     .btn-demo { min-height: 46px; padding: 12px 28px; font-size: 14.5px; }
     .cta-note { display: none; }
-    .stage-logo { margin: 4px 0; }
     .modal { max-height: calc(100dvh - 20px); padding: 24px 26px; }
     .modal h2 { font-size: 20px; }
     .form-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -516,7 +521,7 @@
   @keyframes travelTall{ 0%{stroke-dashoffset:440;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
   @keyframes growX    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  /* wide logo (emblem centred at 290,200) */
+  /* wide logo — emblem centred at (290,200) */
   .logo-wide .ring-a,
   .logo-wide .ring-b,
   .logo-wide .orbit {
@@ -529,7 +534,7 @@
   .logo-wide .gmark  { stroke-dasharray: 290; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
   .logo-wide .gpulse { stroke-dasharray: 48 242; opacity: 0; animation: travel 3.6s linear 2.2s infinite; }
 
-  /* tall logo (emblem centred at 300,220) */
+  /* tall logo — emblem centred at (300,220) */
   .logo-tall .ring-a,
   .logo-tall .ring-b,
   .logo-tall .orbit {
@@ -567,104 +572,68 @@
 
 <body>
 
-<!-- ============================================================
-     SHARED DEFS
-============================================================ -->
-<svg class="svg-defs" aria-hidden="true" focusable="false" width="0" height="0">
-  <defs>
-    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0"    stop-color="#3b82f6"/>
-      <stop offset="0.45" stop-color="#22d3ee"/>
-      <stop offset="1"    stop-color="#8b5cf6"/>
-    </linearGradient>
-
-    <linearGradient id="wordGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0"    stop-color="#ffffff"/>
-      <stop offset="0.65" stop-color="#e2ecff"/>
-      <stop offset="1"    stop-color="#9fc0ff"/>
-    </linearGradient>
-
-    <linearGradient id="ruleGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0"   stop-color="#22d3ee"/>
-      <stop offset="0.55" stop-color="#3b82f6"/>
-      <stop offset="1"   stop-color="#8b5cf6" stop-opacity="0"/>
-    </linearGradient>
-
-    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0"   stop-color="#05070f"/>
-      <stop offset="0.5" stop-color="#0a1024"/>
-      <stop offset="1"   stop-color="#04060d"/>
-    </linearGradient>
-
-    <radialGradient id="coreGlow">
-      <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.34"/>
-      <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.09"/>
-      <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
-    </radialGradient>
-
-    <radialGradient id="blobBlue">
-      <stop offset="0" stop-color="#2563eb" stop-opacity="0.50"/>
-      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="blobCyan">
-      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.40"/>
-      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="blobViolet">
-      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.42"/>
-      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
-    </radialGradient>
-
-    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
-      <path d="M44 0H0v44" fill="none" stroke="#3b5ba9" stroke-width="1"/>
-    </pattern>
-    <radialGradient id="gridFadeGrad">
-      <stop offset="0"   stop-color="#ffffff" stop-opacity="0.50"/>
-      <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.10"/>
-      <stop offset="1"   stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
-    <mask id="gridMask">
-      <rect width="1200" height="400" fill="url(#gridFadeGrad)"/>
-    </mask>
-
-    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="5" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-
-    <filter id="nodeGlow" x="-200%" y="-200%" width="500%" height="500%">
-      <feGaussianBlur stdDeviation="4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-</svg>
-
-<!-- ============================================================
-     STAGE
-============================================================ -->
 <main class="stage">
 
+  <!-- ambient blobs -->
   <div class="blob blob-a" aria-hidden="true"></div>
   <div class="blob blob-b" aria-hidden="true"></div>
   <div class="blob blob-c" aria-hidden="true"></div>
 
+  <!-- badge -->
   <header class="stage-top">
     <span class="badge">
       <span class="dot"></span> Custom Software Studio
     </span>
   </header>
 
-  <div class="stage-logo">
+  <!-- logo area — flex centred -->
+  <div class="logo-area">
 
-    <!-- ============ WIDE / LANDSCAPE — original coordinates ============ -->
-    <svg class="logo logo-wide" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet"
-         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
+    <!-- ============================================================
+         WIDE / LANDSCAPE LOGO  —  defs inline
+    ============================================================ -->
+    <svg class="logo-wide" viewBox="0 0 1200 400"
+         preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="GSM Solution">
+      <defs>
+        <linearGradient id="wBrandGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0"    stop-color="#3b82f6"/>
+          <stop offset="0.45" stop-color="#22d3ee"/>
+          <stop offset="1"    stop-color="#8b5cf6"/>
+        </linearGradient>
+        <linearGradient id="wWordGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"    stop-color="#ffffff"/>
+          <stop offset="0.65" stop-color="#e2ecff"/>
+          <stop offset="1"    stop-color="#9fc0ff"/>
+        </linearGradient>
+        <linearGradient id="wRuleGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"    stop-color="#22d3ee"/>
+          <stop offset="0.55" stop-color="#3b82f6"/>
+          <stop offset="1"    stop-color="#8b5cf6" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="wCoreGlow">
+          <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.34"/>
+          <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.09"/>
+          <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="wGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="wNodeGlow" x="-200%" y="-200%" width="500%" height="500%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- emblem -->
       <g class="emblem">
-        <circle cx="290" cy="200" r="130" fill="url(#coreGlow)"/>
+        <circle cx="290" cy="200" r="130" fill="url(#wCoreGlow)"/>
 
         <g class="ring-a">
           <circle cx="290" cy="200" r="96" fill="none"
-                  stroke="url(#brandGrad)" stroke-width="2"
+                  stroke="url(#wBrandGrad)" stroke-width="2"
                   stroke-linecap="round" stroke-dasharray="20 30" opacity="0.9"/>
         </g>
 
@@ -675,13 +644,13 @@
         </g>
 
         <circle cx="290" cy="200" r="63" fill="#0a1229" fill-opacity="0.88"
-                stroke="url(#brandGrad)" stroke-width="1.5" stroke-opacity="0.7"/>
+                stroke="url(#wBrandGrad)" stroke-width="1.5" stroke-opacity="0.7"/>
 
         <path class="gmark"
               d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
-              fill="none" stroke="url(#brandGrad)" stroke-width="11"
+              fill="none" stroke="url(#wBrandGrad)" stroke-width="11"
               stroke-linecap="round" stroke-linejoin="round"
-              filter="url(#glow)"/>
+              filter="url(#wGlow)"/>
 
         <path class="gpulse"
               d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
@@ -689,34 +658,71 @@
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <g class="orbit">
-          <circle cx="386" cy="200" r="7" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="386" cy="200" r="7" fill="#22d3ee" filter="url(#wNodeGlow)"/>
           <circle cx="386" cy="200" r="3" fill="#ffffff"/>
         </g>
       </g>
 
+      <!-- wordmark -->
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
         <text class="rise-1" x="422" y="178" font-size="106" font-weight="800"
-              letter-spacing="1" fill="url(#wordGrad)">GSM</text>
+              letter-spacing="1" fill="url(#wWordGrad)">GSM</text>
 
         <text class="rise-2" x="428" y="230" font-size="30" font-weight="600"
               letter-spacing="13" fill="#22d3ee">SOLUTION</text>
 
-        <rect class="rule" x="428" y="258" width="300" height="3" rx="1.5" fill="url(#ruleGrad)"/>
+        <rect class="rule" x="428" y="258" width="300" height="3" rx="1.5" fill="url(#wRuleGrad)"/>
 
         <text class="rise-3" x="428" y="296" font-size="16" font-weight="500"
               letter-spacing="1.6" fill="#8ea6d4">Order · Inventory · Attendance · Billing · Quotation · GST</text>
       </g>
     </svg>
 
-    <!-- ============ TALL / PORTRAIT — emblem scaled 1.5× about (300,220) ============ -->
-    <svg class="logo logo-tall" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid meet"
-         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
+    <!-- ============================================================
+         TALL / PORTRAIT LOGO — 1.5× scaled copy, defs inline
+    ============================================================ -->
+    <svg class="logo-tall" viewBox="0 0 600 800"
+         preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="GSM Solution">
+      <defs>
+        <linearGradient id="tBrandGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0"    stop-color="#3b82f6"/>
+          <stop offset="0.45" stop-color="#22d3ee"/>
+          <stop offset="1"    stop-color="#8b5cf6"/>
+        </linearGradient>
+        <linearGradient id="tWordGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"    stop-color="#ffffff"/>
+          <stop offset="0.65" stop-color="#e2ecff"/>
+          <stop offset="1"    stop-color="#9fc0ff"/>
+        </linearGradient>
+        <linearGradient id="tRuleGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"    stop-color="#22d3ee"/>
+          <stop offset="0.55" stop-color="#3b82f6"/>
+          <stop offset="1"    stop-color="#8b5cf6" stop-opacity="0"/>
+        </linearGradient>
+        <radialGradient id="tCoreGlow">
+          <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.34"/>
+          <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.09"/>
+          <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="tGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="tNodeGlow" x="-200%" y="-200%" width="500%" height="500%">
+          <feGaussianBlur stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- emblem (scaled 1.5×) -->
       <g class="emblem">
-        <circle cx="300" cy="220" r="195" fill="url(#coreGlow)"/>
+        <circle cx="300" cy="220" r="195" fill="url(#tCoreGlow)"/>
 
         <g class="ring-a">
           <circle cx="300" cy="220" r="144" fill="none"
-                  stroke="url(#brandGrad)" stroke-width="2.6"
+                  stroke="url(#tBrandGrad)" stroke-width="2.6"
                   stroke-linecap="round" stroke-dasharray="30 45" opacity="0.9"/>
         </g>
 
@@ -727,14 +733,13 @@
         </g>
 
         <circle cx="300" cy="220" r="94.5" fill="#0a1229" fill-opacity="0.88"
-                stroke="url(#brandGrad)" stroke-width="2" stroke-opacity="0.7"/>
+                stroke="url(#tBrandGrad)" stroke-width="2" stroke-opacity="0.7"/>
 
-        <!-- G path scaled by 1.5 from original, re-centred at (300,220) -->
         <path class="gmark"
               d="M 344.36 167.14 A 69 69 0 1 0 348.80 268.80 L 348.80 220 L 309 220"
-              fill="none" stroke="url(#brandGrad)" stroke-width="16.5"
+              fill="none" stroke="url(#tBrandGrad)" stroke-width="16.5"
               stroke-linecap="round" stroke-linejoin="round"
-              filter="url(#glow)"/>
+              filter="url(#tGlow)"/>
 
         <path class="gpulse"
               d="M 344.36 167.14 A 69 69 0 1 0 348.80 268.80 L 348.80 220 L 309 220"
@@ -742,20 +747,21 @@
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <g class="orbit">
-          <circle cx="444" cy="220" r="10.5" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="444" cy="220" r="10.5" fill="#22d3ee" filter="url(#tNodeGlow)"/>
           <circle cx="444" cy="220" r="4.5" fill="#ffffff"/>
         </g>
       </g>
 
+      <!-- wordmark (centred) -->
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
          text-anchor="middle">
         <text class="rise-1" x="300" y="530" font-size="118" font-weight="800"
-              letter-spacing="1" fill="url(#wordGrad)">GSM</text>
+              letter-spacing="1" fill="url(#tWordGrad)">GSM</text>
 
         <text class="rise-2" x="300" y="588" font-size="30" font-weight="600"
               letter-spacing="14" fill="#22d3ee">SOLUTION</text>
 
-        <rect class="rule rule-c" x="120" y="618" width="360" height="3" rx="1.5" fill="url(#ruleGrad)"/>
+        <rect class="rule rule-c" x="120" y="618" width="360" height="3" rx="1.5" fill="url(#tRuleGrad)"/>
 
         <text class="rise-3" x="300" y="668" font-size="16" font-weight="500"
               letter-spacing="1.4" fill="#8ea6d4">Order · Inventory · Attendance</text>
@@ -766,6 +772,7 @@
 
   </div>
 
+  <!-- CTA -->
   <footer class="stage-cta">
     <button id="demoBtn" class="btn-demo" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -792,7 +799,6 @@
       <p class="sub">Tell us what you need and we'll walk you through the right GSM Solution software for your business.</p>
     </div>
 
-    <!-- Web3Forms — key already filled in -->
     <form id="demoForm" novalidate>
 
       <input type="hidden" name="access_key" value="00b18b52-f17b-4739-8720-309d2cb0d711">
