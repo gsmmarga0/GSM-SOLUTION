@@ -8,9 +8,6 @@
 <title>GSM Solution — Custom Software Development</title>
 
 <style>
-  /* ============================================================
-     RESET
-  ============================================================ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -35,8 +32,6 @@
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
-
-    /* lock to viewport — no page scroll, the stage owns the screen */
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
@@ -44,7 +39,6 @@
     padding: var(--pad);
   }
 
-  /* hidden defs holder */
   .svg-defs {
     position: absolute;
     width: 0; height: 0;
@@ -53,7 +47,7 @@
   }
 
   /* ============================================================
-     THE BLUE BOX  —  always fits the screen
+     STAGE — the blue box, always fits the screen
   ============================================================ */
   .stage {
     position: relative;
@@ -84,7 +78,6 @@
       0 1px 0 rgba(255,255,255,.05) inset;
   }
 
-  /* grid overlay */
   .stage::before {
     content: "";
     position: absolute;
@@ -99,7 +92,6 @@
             mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 0%, transparent 78%);
   }
 
-  /* drifting glow blobs */
   .blob {
     position: absolute;
     z-index: 0;
@@ -108,15 +100,14 @@
     pointer-events: none;
     will-change: transform;
   }
-  .blob-a { width: 46vmin; height: 46vmin; left: -8vmin;  top: -8vmin;  background: radial-gradient(circle, rgba(37,99,235,.55), transparent 68%);  animation: drift  24s ease-in-out infinite; }
-  .blob-b { width: 52vmin; height: 52vmin; right: -12vmin; top: -14vmin; background: radial-gradient(circle, rgba(124,58,237,.48), transparent 68%); animation: drift2 30s ease-in-out infinite; }
-  .blob-c { width: 48vmin; height: 48vmin; right: 6vmin;  bottom: -18vmin; background: radial-gradient(circle, rgba(6,182,212,.42), transparent 68%); animation: drift3 27s ease-in-out infinite; }
+  .blob-a { width: 46vmin; height: 46vmin; left: -8vmin;   top: -8vmin;    background: radial-gradient(circle, rgba(37,99,235,.55), transparent 68%);  animation: drift  24s ease-in-out infinite; }
+  .blob-b { width: 52vmin; height: 52vmin; right: -12vmin; top: -14vmin;   background: radial-gradient(circle, rgba(124,58,237,.48), transparent 68%); animation: drift2 30s ease-in-out infinite; }
+  .blob-c { width: 48vmin; height: 48vmin; right: 6vmin;   bottom: -18vmin; background: radial-gradient(circle, rgba(6,182,212,.42), transparent 68%); animation: drift3 27s ease-in-out infinite; }
 
-  @keyframes drift  { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(6vmin,-4vmin) scale(1.08);} }
-  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(-7vmin,4vmin) scale(1.06);} }
-  @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(4vmin,5vmin) scale(1.1);} }
+  @keyframes drift  { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(6vmin,-4vmin) scale(1.08);} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(-7vmin,4vmin) scale(1.06);} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(4vmin,5vmin) scale(1.1);} }
 
-  /* ---------- stage rows ---------- */
   .stage > * { position: relative; z-index: 1; }
 
   .stage-top {
@@ -154,7 +145,7 @@
     50%     { opacity: .45; transform: scale(.72); }
   }
 
-  /* ---------- logo area: takes all leftover space, never overflows ---------- */
+  /* logo area takes all remaining vertical space */
   .stage-logo {
     position: relative;
     flex: 1 1 auto;
@@ -168,10 +159,8 @@
     height: 100%;
     display: block;
   }
-
   .logo-tall { display: none; }
 
-  /* ---------- CTA row ---------- */
   .stage-cta {
     flex: 0 0 auto;
     display: flex;
@@ -188,7 +177,7 @@
   }
 
   /* ============================================================
-     REQUEST DEMO BUTTON
+     BUTTON
   ============================================================ */
   .btn-demo {
     position: relative;
@@ -249,7 +238,7 @@
   .btn-demo span { position: relative; z-index: 1; }
 
   /* ============================================================
-     MODAL — also fits the screen
+     MODAL
   ============================================================ */
   .modal-overlay {
     position: fixed;
@@ -280,7 +269,7 @@
     border-radius: clamp(16px, 1.6vw, 24px);
     border: 1px solid rgba(59,130,246,.30);
     background:
-      radial-gradient(120% 100% at 0% 0%,   rgba(37,99,235,.22) 0%, transparent 55%),
+      radial-gradient(120% 100% at 0% 0%,    rgba(37,99,235,.22) 0%, transparent 55%),
       radial-gradient(110% 110% at 100% 100%, rgba(124,58,237,.20) 0%, transparent 58%),
       linear-gradient(165deg, #0c1429 0%, #070b18 100%);
     box-shadow:
@@ -292,7 +281,6 @@
   }
   .modal-overlay.open .modal { transform: translateY(0) scale(1); opacity: 1; }
 
-  /* accent line */
   .modal::before {
     content: "";
     position: absolute;
@@ -300,23 +288,6 @@
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), var(--violet), transparent);
   }
-
-  /* subtle grid inside modal */
-  .modal::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background-image:
-      linear-gradient(rgba(59,91,169,.16) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59,91,169,.16) 1px, transparent 1px);
-    background-size: 46px 46px;
-    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 75%);
-            mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 75%);
-    opacity: .7;
-  }
-  .modal > * { position: relative; z-index: 1; }
 
   .modal-close {
     position: absolute;
@@ -484,27 +455,19 @@
   /* ============================================================
      RESPONSIVE
   ============================================================ */
-
-  /* ---------- PHONES, PORTRAIT: true full-bleed ---------- */
   @media (max-width: 860px) and (orientation: portrait) {
     body { padding: 0; }
     .stage {
       border-radius: 0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      border-bottom: none;
+      border: none;
       padding-left:   max(clamp(16px, 5vw, 26px), env(safe-area-inset-left));
       padding-right:  max(clamp(16px, 5vw, 26px), env(safe-area-inset-right));
       padding-top:    max(18px, env(safe-area-inset-top));
       padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
-
-    /* swap to the tall logo */
     .logo-wide { display: none; }
     .logo-tall { display: block; }
 
-    /* full-screen sheet modal */
     .modal-overlay { padding: 0; place-items: stretch; }
     .modal {
       max-width: none;
@@ -520,14 +483,12 @@
     .form-grid { grid-template-columns: 1fr; }
   }
 
-  /* ---------- PHONES, LANDSCAPE ---------- */
   @media (max-width: 860px) and (orientation: landscape) {
     .stage { padding: 14px 20px; }
     .badge { padding: 6px 13px 6px 10px; font-size: 10px; }
     .btn-demo { min-height: 46px; padding: 12px 28px; font-size: 14.5px; }
     .cta-note { display: none; }
     .stage-logo { margin: 4px 0; }
-
     .modal { max-height: calc(100dvh - 20px); padding: 24px 26px; }
     .modal h2 { font-size: 20px; }
     .form-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -536,14 +497,10 @@
     .field textarea { min-height: 56px; }
   }
 
-  /* ---------- SHORT SCREENS ---------- */
   @media (max-height: 520px) {
     .badge { display: none; }
     .cta-note { display: none; }
     .btn-demo { min-height: 44px; padding: 11px 26px; font-size: 14px; }
-  }
-  @media (max-height: 640px) and (orientation: portrait) {
-    .badge { padding: 6px 13px 6px 10px; font-size: 10px; }
   }
 
   /* ============================================================
@@ -552,30 +509,45 @@
   @keyframes spin     { to { transform: rotate(360deg); } }
   @keyframes spinRev  { to { transform: rotate(-360deg); } }
   @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes riseIn   { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
-  @keyframes drawG    { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }
-  @keyframes travel   { 0%{stroke-dashoffset:300;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
+  @keyframes riseIn   { from { opacity:0; transform: translateY(22px);} to { opacity:1; transform: translateY(0);} }
+  @keyframes drawG    { from { stroke-dashoffset: 290; } to { stroke-dashoffset: 0; } }
+  @keyframes drawGtall{ from { stroke-dashoffset: 440; } to { stroke-dashoffset: 0; } }
+  @keyframes travel   { 0%{stroke-dashoffset:290;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
+  @keyframes travelTall{ 0%{stroke-dashoffset:440;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
   @keyframes growX    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  .logo { --ox: 270px; --oy: 170px; }          /* wide emblem centre */
-  .logo-tall { --ox: 380px; --oy: 280px; }     /* tall emblem centre */
+  /* wide logo (emblem centred at 290,200) */
+  .logo-wide .ring-a,
+  .logo-wide .ring-b,
+  .logo-wide .orbit {
+    transform-box: view-box;
+    transform-origin: 290px 200px;
+  }
+  .logo-wide .ring-a { animation: spin 28s linear infinite; }
+  .logo-wide .ring-b { animation: spinRev 20s linear infinite; }
+  .logo-wide .orbit  { animation: spin 9s linear infinite; }
+  .logo-wide .gmark  { stroke-dasharray: 290; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
+  .logo-wide .gpulse { stroke-dasharray: 48 242; opacity: 0; animation: travel 3.6s linear 2.2s infinite; }
+
+  /* tall logo (emblem centred at 300,220) */
+  .logo-tall .ring-a,
+  .logo-tall .ring-b,
+  .logo-tall .orbit {
+    transform-box: view-box;
+    transform-origin: 300px 220px;
+  }
+  .logo-tall .ring-a { animation: spin 28s linear infinite; }
+  .logo-tall .ring-b { animation: spinRev 20s linear infinite; }
+  .logo-tall .orbit  { animation: spin 9s linear infinite; }
+  .logo-tall .gmark  { stroke-dasharray: 440; animation: drawGtall 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
+  .logo-tall .gpulse { stroke-dasharray: 72 368; opacity: 0; animation: travelTall 3.6s linear 2.2s infinite; }
 
   .emblem { animation: fadeIn 1s ease both; }
-
-  .ring-a, .ring-b, .orbit {
-    transform-box: view-box;
-    transform-origin: var(--ox) var(--oy);
-  }
-  .ring-a { animation: spin 28s linear infinite; }
-  .ring-b { animation: spinRev 20s linear infinite; }
-  .orbit  { animation: spin 9s linear infinite; }
-
-  .gmark  { stroke-dasharray: 300; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
-  .gpulse { stroke-dasharray: 50 250; opacity: 0; animation: travel 3.6s linear 2.2s infinite; }
 
   .rise-1 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .45s both; }
   .rise-2 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .60s both; }
   .rise-3 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .75s both; }
+  .rise-4 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .88s both; }
 
   .rule {
     transform-box: fill-box;
@@ -586,7 +558,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .blob, .ring-a, .ring-b, .orbit, .gmark, .gpulse,
-    .rise-1, .rise-2, .rise-3, .rule, .emblem,
+    .rise-1, .rise-2, .rise-3, .rise-4, .rule, .emblem,
     .btn-demo::before, .btn-demo::after, .badge .dot { animation: none !important; }
     .gpulse { opacity: 0 !important; }
   }
@@ -596,7 +568,7 @@
 <body>
 
 <!-- ============================================================
-     SHARED SVG DEFS (referenced by both logo variants)
+     SHARED DEFS
 ============================================================ -->
 <svg class="svg-defs" aria-hidden="true" focusable="false" width="0" height="0">
   <defs>
@@ -618,14 +590,45 @@
       <stop offset="1"   stop-color="#8b5cf6" stop-opacity="0"/>
     </linearGradient>
 
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"   stop-color="#05070f"/>
+      <stop offset="0.5" stop-color="#0a1024"/>
+      <stop offset="1"   stop-color="#04060d"/>
+    </linearGradient>
+
     <radialGradient id="coreGlow">
       <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.34"/>
       <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.09"/>
       <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
     </radialGradient>
 
+    <radialGradient id="blobBlue">
+      <stop offset="0" stop-color="#2563eb" stop-opacity="0.50"/>
+      <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blobCyan">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blobViolet">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+
+    <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0v44" fill="none" stroke="#3b5ba9" stroke-width="1"/>
+    </pattern>
+    <radialGradient id="gridFadeGrad">
+      <stop offset="0"   stop-color="#ffffff" stop-opacity="0.50"/>
+      <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="1"   stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="gridMask">
+      <rect width="1200" height="400" fill="url(#gridFadeGrad)"/>
+    </mask>
+
     <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feGaussianBlur stdDeviation="5" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
 
@@ -641,125 +644,128 @@
 ============================================================ -->
 <main class="stage">
 
-  <!-- ambient -->
   <div class="blob blob-a" aria-hidden="true"></div>
   <div class="blob blob-b" aria-hidden="true"></div>
   <div class="blob blob-c" aria-hidden="true"></div>
 
-  <!-- top badge -->
   <header class="stage-top">
     <span class="badge">
       <span class="dot"></span> Custom Software Studio
     </span>
   </header>
 
-  <!-- logo (both variants live here; CSS swaps them) -->
   <div class="stage-logo">
 
-    <!-- ============ WIDE / LANDSCAPE LOGO ============ -->
-    <svg class="logo logo-wide" viewBox="0 0 1100 340" preserveAspectRatio="xMidYMid meet"
+    <!-- ============ WIDE / LANDSCAPE — original coordinates ============ -->
+    <svg class="logo logo-wide" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet"
          xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
       <g class="emblem">
-        <circle cx="270" cy="170" r="140" fill="url(#coreGlow)"/>
+        <circle cx="290" cy="200" r="130" fill="url(#coreGlow)"/>
 
         <g class="ring-a">
-          <circle cx="270" cy="170" r="118" fill="none" stroke="url(#brandGrad)"
-                  stroke-width="2" stroke-linecap="round" stroke-dasharray="22 32" opacity="0.9"/>
+          <circle cx="290" cy="200" r="96" fill="none"
+                  stroke="url(#brandGrad)" stroke-width="2"
+                  stroke-linecap="round" stroke-dasharray="20 30" opacity="0.9"/>
         </g>
 
         <g class="ring-b">
-          <circle cx="270" cy="170" r="98" fill="none" stroke="#22d3ee"
-                  stroke-width="2" stroke-linecap="round" stroke-dasharray="2 14" opacity="0.6"/>
+          <circle cx="290" cy="200" r="79" fill="none"
+                  stroke="#22d3ee" stroke-width="2"
+                  stroke-linecap="round" stroke-dasharray="2 13" opacity="0.6"/>
         </g>
 
-        <circle cx="270" cy="170" r="78" fill="#0a1229" fill-opacity="0.9"
-                stroke="url(#brandGrad)" stroke-width="1.6" stroke-opacity="0.75"/>
+        <circle cx="290" cy="200" r="63" fill="#0a1229" fill-opacity="0.88"
+                stroke="url(#brandGrad)" stroke-width="1.5" stroke-opacity="0.7"/>
 
         <path class="gmark"
-              d="M 306.61 126.37 A 56.95 56.95 0 1 0 310.27 210.27 L 310.27 170 L 277.43 170"
-              fill="none" stroke="url(#brandGrad)" stroke-width="13"
-              stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+              d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
+              fill="none" stroke="url(#brandGrad)" stroke-width="11"
+              stroke-linecap="round" stroke-linejoin="round"
+              filter="url(#glow)"/>
 
         <path class="gpulse"
-              d="M 306.61 126.37 A 56.95 56.95 0 1 0 310.27 210.27 L 310.27 170 L 277.43 170"
-              fill="none" stroke="#a5f3fc" stroke-width="13"
+              d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
+              fill="none" stroke="#a5f3fc" stroke-width="11"
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <g class="orbit">
-          <circle cx="388" cy="170" r="8" fill="#22d3ee" filter="url(#nodeGlow)"/>
-          <circle cx="388" cy="170" r="3.4" fill="#ffffff"/>
+          <circle cx="386" cy="200" r="7" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="386" cy="200" r="3" fill="#ffffff"/>
         </g>
       </g>
 
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
-        <text class="rise-1" x="440" y="144" font-size="114" font-weight="800"
-              letter-spacing="0.5" fill="url(#wordGrad)">GSM</text>
+        <text class="rise-1" x="422" y="178" font-size="106" font-weight="800"
+              letter-spacing="1" fill="url(#wordGrad)">GSM</text>
 
-        <text class="rise-2" x="446" y="196" font-size="28" font-weight="600"
+        <text class="rise-2" x="428" y="230" font-size="30" font-weight="600"
               letter-spacing="13" fill="#22d3ee">SOLUTION</text>
 
-        <rect class="rule" x="446" y="222" width="300" height="3" rx="1.5" fill="url(#ruleGrad)"/>
+        <rect class="rule" x="428" y="258" width="300" height="3" rx="1.5" fill="url(#ruleGrad)"/>
 
-        <text class="rise-3" x="446" y="258" font-size="14.5" font-weight="500"
-              letter-spacing="1.4" fill="#8ea6d4">Order · Inventory · Attendance · Billing · Quotation · GST</text>
+        <text class="rise-3" x="428" y="296" font-size="16" font-weight="500"
+              letter-spacing="1.6" fill="#8ea6d4">Order · Inventory · Attendance · Billing · Quotation · GST</text>
       </g>
     </svg>
 
-    <!-- ============ TALL / PORTRAIT LOGO ============ -->
-    <svg class="logo logo-tall" viewBox="0 0 760 820" preserveAspectRatio="xMidYMid meet"
+    <!-- ============ TALL / PORTRAIT — emblem scaled 1.5× about (300,220) ============ -->
+    <svg class="logo logo-tall" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid meet"
          xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
       <g class="emblem">
-        <circle cx="380" cy="280" r="175" fill="url(#coreGlow)"/>
+        <circle cx="300" cy="220" r="195" fill="url(#coreGlow)"/>
 
         <g class="ring-a">
-          <circle cx="380" cy="280" r="148" fill="none" stroke="url(#brandGrad)"
-                  stroke-width="2.4" stroke-linecap="round" stroke-dasharray="26 38" opacity="0.9"/>
+          <circle cx="300" cy="220" r="144" fill="none"
+                  stroke="url(#brandGrad)" stroke-width="2.6"
+                  stroke-linecap="round" stroke-dasharray="30 45" opacity="0.9"/>
         </g>
 
         <g class="ring-b">
-          <circle cx="380" cy="280" r="123" fill="none" stroke="#22d3ee"
-                  stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 16" opacity="0.6"/>
+          <circle cx="300" cy="220" r="118.5" fill="none"
+                  stroke="#22d3ee" stroke-width="2.6"
+                  stroke-linecap="round" stroke-dasharray="3 19.5" opacity="0.6"/>
         </g>
 
-        <circle cx="380" cy="280" r="98" fill="#0a1229" fill-opacity="0.9"
-                stroke="url(#brandGrad)" stroke-width="1.8" stroke-opacity="0.75"/>
+        <circle cx="300" cy="220" r="94.5" fill="#0a1229" fill-opacity="0.88"
+                stroke="url(#brandGrad)" stroke-width="2" stroke-opacity="0.7"/>
 
+        <!-- G path scaled by 1.5 from original, re-centred at (300,220) -->
         <path class="gmark"
-              d="M 426.00 225.18 A 71.56 71.56 0 1 0 430.60 330.60 L 430.60 280 L 389.33 280"
-              fill="none" stroke="url(#brandGrad)" stroke-width="17"
-              stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+              d="M 344.36 167.14 A 69 69 0 1 0 348.80 268.80 L 348.80 220 L 309 220"
+              fill="none" stroke="url(#brandGrad)" stroke-width="16.5"
+              stroke-linecap="round" stroke-linejoin="round"
+              filter="url(#glow)"/>
 
         <path class="gpulse"
-              d="M 426.00 225.18 A 71.56 71.56 0 1 0 430.60 330.60 L 430.60 280 L 389.33 280"
-              fill="none" stroke="#a5f3fc" stroke-width="17"
+              d="M 344.36 167.14 A 69 69 0 1 0 348.80 268.80 L 348.80 220 L 309 220"
+              fill="none" stroke="#a5f3fc" stroke-width="16.5"
               stroke-linecap="round" stroke-linejoin="round"/>
 
         <g class="orbit">
-          <circle cx="528" cy="280" r="9" fill="#22d3ee" filter="url(#nodeGlow)"/>
-          <circle cx="528" cy="280" r="3.8" fill="#ffffff"/>
+          <circle cx="444" cy="220" r="10.5" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="444" cy="220" r="4.5" fill="#ffffff"/>
         </g>
       </g>
 
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
          text-anchor="middle">
-        <text class="rise-1" x="380" y="562" font-size="128" font-weight="800"
+        <text class="rise-1" x="300" y="530" font-size="118" font-weight="800"
               letter-spacing="1" fill="url(#wordGrad)">GSM</text>
 
-        <text class="rise-2" x="380" y="622" font-size="30" font-weight="600"
-              letter-spacing="16" fill="#22d3ee">SOLUTION</text>
+        <text class="rise-2" x="300" y="588" font-size="30" font-weight="600"
+              letter-spacing="14" fill="#22d3ee">SOLUTION</text>
 
-        <rect class="rule rule-c" x="220" y="650" width="320" height="3" rx="1.5" fill="url(#ruleGrad)"/>
+        <rect class="rule rule-c" x="120" y="618" width="360" height="3" rx="1.5" fill="url(#ruleGrad)"/>
 
-        <text class="rise-3" x="380" y="700" font-size="17" font-weight="500"
+        <text class="rise-3" x="300" y="668" font-size="16" font-weight="500"
               letter-spacing="1.4" fill="#8ea6d4">Order · Inventory · Attendance</text>
-        <text class="rise-3" x="380" y="730" font-size="17" font-weight="500"
+        <text class="rise-4" x="300" y="698" font-size="16" font-weight="500"
               letter-spacing="1.4" fill="#8ea6d4">Billing · Quotation · GST</text>
       </g>
     </svg>
 
   </div>
 
-  <!-- CTA -->
   <footer class="stage-cta">
     <button id="demoBtn" class="btn-demo" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -786,10 +792,7 @@
       <p class="sub">Tell us what you need and we'll walk you through the right GSM Solution software for your business.</p>
     </div>
 
-    <!-- ============================================================
-         WEB3FORMS — key already filled in
-         ⚠️ Make sure gsmmargao@gmail.com is VERIFIED on web3forms.com
-    ============================================================ -->
+    <!-- Web3Forms — key already filled in -->
     <form id="demoForm" novalidate>
 
       <input type="hidden" name="access_key" value="00b18b52-f17b-4739-8720-309d2cb0d711">
@@ -850,9 +853,6 @@
   </div>
 </div>
 
-<!-- ============================================================
-     JAVASCRIPT
-============================================================ -->
 <script>
 (function () {
   "use strict";
@@ -869,7 +869,6 @@
 
   let lastFocused = null;
 
-  /* ---------- open / close ---------- */
   function openModal() {
     lastFocused = document.activeElement;
     overlay.classList.add("open");
@@ -897,7 +896,6 @@
     if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
   });
 
-  /* focus trap */
   overlay.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
     const nodes = overlay.querySelectorAll(
@@ -918,7 +916,6 @@
     }
   });
 
-  /* ---------- "Other" conditional ---------- */
   category.addEventListener("change", function () {
     const isOther = category.value === "Other";
     otherWrap.classList.toggle("show", isOther);
@@ -927,7 +924,6 @@
     else otherText.value = "";
   });
 
-  /* ---------- submit ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
