@@ -9,7 +9,7 @@
 
 <style>
   /* ============================================================
-     BASE RESET
+     RESET
   ============================================================ */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -19,51 +19,172 @@
     --violet: #8b5cf6;
     --text:   #e2ecff;
     --muted:  #8ea6d4;
-    --line:   rgba(94,140,220,.28);
+    --line:   rgba(94,140,220,.30);
     --bg:     #03050c;
+    --pad:    clamp(12px, 1.6vw, 24px);
   }
 
   html {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    height: 100%;
   }
 
   body {
     font-family: Inter, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    min-height: 100dvh; /* dynamic viewport height for mobile */
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+
+    /* lock to viewport — no page scroll, the stage owns the screen */
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    padding: var(--pad);
+  }
+
+  /* hidden defs holder */
+  .svg-defs {
+    position: absolute;
+    width: 0; height: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   /* ============================================================
-     RESPONSIVE PAGE LAYOUT
-     — Phones (portrait): full-screen vertical
-     — Desktops (landscape): centered horizontal
+     THE BLUE BOX  —  always fits the screen
   ============================================================ */
-  .page {
+  .stage {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    border-radius: clamp(18px, 2.2vw, 32px);
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(16px, 2.2vw, 38px);
+    padding-top:    max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-bottom));
+    padding-left:   max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-left));
+    padding-right:  max(clamp(16px, 2.2vw, 38px), env(safe-area-inset-right));
+
+    background:
+      radial-gradient(120% 100% at 12% 0%,   rgba(37,99,235,.28) 0%, transparent 55%),
+      radial-gradient(110% 110% at 100% 100%, rgba(124,58,237,.26) 0%, transparent 58%),
+      radial-gradient(90% 90% at 78% 6%,     rgba(6,182,212,.20) 0%, transparent 60%),
+      linear-gradient(165deg, #060a16 0%, #0a1124 45%, #04070f 100%);
+
+    border: 1px solid rgba(59,130,246,.20);
+    box-shadow:
+      0 40px 120px -50px rgba(34,211,238,.35),
+      0 0 0 1px rgba(255,255,255,.02) inset,
+      0 1px 0 rgba(255,255,255,.05) inset;
+  }
+
+  /* grid overlay */
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(59,91,169,.22) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,91,169,.22) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 0%, transparent 78%);
+            mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 0%, transparent 78%);
+  }
+
+  /* drifting glow blobs */
+  .blob {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(70px);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .blob-a { width: 46vmin; height: 46vmin; left: -8vmin;  top: -8vmin;  background: radial-gradient(circle, rgba(37,99,235,.55), transparent 68%);  animation: drift  24s ease-in-out infinite; }
+  .blob-b { width: 52vmin; height: 52vmin; right: -12vmin; top: -14vmin; background: radial-gradient(circle, rgba(124,58,237,.48), transparent 68%); animation: drift2 30s ease-in-out infinite; }
+  .blob-c { width: 48vmin; height: 48vmin; right: 6vmin;  bottom: -18vmin; background: radial-gradient(circle, rgba(6,182,212,.42), transparent 68%); animation: drift3 27s ease-in-out infinite; }
+
+  @keyframes drift  { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(6vmin,-4vmin) scale(1.08);} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(-7vmin,4vmin) scale(1.06);} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1);}     50%{transform:translate(4vmin,5vmin) scale(1.1);} }
+
+  /* ---------- stage rows ---------- */
+  .stage > * { position: relative; z-index: 1; }
+
+  .stage-top {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 16px 8px 12px;
+    font-size: clamp(10.5px, 1.05vw, 12.5px);
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #a9c4ee;
+    background: rgba(13,23,48,.7);
+    border: 1px solid rgba(59,130,246,.3);
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+    white-space: nowrap;
+  }
+  .badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulseDot 2.4s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%,100% { opacity: 1;  transform: scale(1); }
+    50%     { opacity: .45; transform: scale(.72); }
+  }
+
+  /* ---------- logo area: takes all leftover space, never overflows ---------- */
+  .stage-logo {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: clamp(6px, 1.2vh, 18px) 0;
+  }
+  .stage-logo svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .logo-tall { display: none; }
+
+  /* ---------- CTA row ---------- */
+  .stage-cta {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 32px;
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 28px 16px 40px;
-    width: 100%;
+    gap: clamp(8px, 1.2vh, 14px);
   }
 
-  /* Logo container — fluid width */
-  .logo-wrap {
-    width: 100%;
-    max-width: 1200px;
-  }
-  .logo-wrap svg {
-    display: block;
-    width: 100%;
-    height: auto;
+  .cta-note {
+    font-size: clamp(11px, 1.05vw, 13px);
+    color: #6f86b3;
+    letter-spacing: .02em;
+    text-align: center;
   }
 
   /* ============================================================
@@ -75,11 +196,11 @@
     align-items: center;
     justify-content: center;
     gap: 11px;
-    padding: 17px 40px;
+    padding: clamp(14px, 1.5vh, 17px) clamp(30px, 4vw, 46px);
     font-family: inherit;
-    font-size: 17px;
+    font-size: clamp(15px, 1.25vw, 17px);
     font-weight: 700;
-    letter-spacing: .4px;
+    letter-spacing: .3px;
     color: #04121f;
     background: linear-gradient(135deg, var(--cyan), var(--blue) 55%, var(--violet));
     border: none;
@@ -87,53 +208,40 @@
     cursor: pointer;
     overflow: hidden;
     isolation: isolate;
+    touch-action: manipulation;
+    min-height: 52px;
     box-shadow:
       0 0 0 1px rgba(34,211,238,.35),
-      0 14px 38px -10px rgba(59,130,246,.85);
+      0 16px 40px -14px rgba(59,130,246,.95);
     transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
-    touch-action: manipulation; /* faster tap on mobile */
-    min-height: 54px; /* comfortable tap target */
   }
   .btn-demo:hover {
     transform: translateY(-3px);
-    box-shadow:
-      0 0 0 1px rgba(34,211,238,.65),
-      0 20px 48px -10px rgba(59,130,246,1);
+    box-shadow: 0 0 0 1px rgba(34,211,238,.7), 0 22px 52px -14px rgba(59,130,246,1);
   }
   .btn-demo:active { transform: translateY(-1px) scale(.99); }
   .btn-demo:focus-visible { outline: 3px solid #a5f3fc; outline-offset: 4px; }
 
-  /* shimmer sweep */
   .btn-demo::after {
     content: "";
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     pointer-events: none;
-    background: linear-gradient(115deg,
-      transparent 32%,
-      rgba(255,255,255,.7) 50%,
-      transparent 68%);
+    background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.75) 50%, transparent 68%);
     transform: translateX(-130%);
-    animation: sweep 3.4s ease-in-out infinite;
+    animation: sweep 3.6s ease-in-out infinite;
   }
-  @keyframes sweep {
-    0%        { transform: translateX(-130%); }
-    55%, 100% { transform: translateX(130%); }
-  }
+  @keyframes sweep { 0%{transform:translateX(-130%);} 55%,100%{transform:translateX(130%);} }
 
-  /* pulsing halo */
   .btn-demo::before {
     content: "";
-    position: absolute;
-    inset: -3px;
+    position: absolute; inset: -3px;
     border-radius: inherit;
     pointer-events: none;
-    box-shadow: 0 0 0 0 rgba(34,211,238,.55);
-    animation: halo 2.6s ease-out infinite;
+    animation: halo 2.8s ease-out infinite;
   }
   @keyframes halo {
     0%   { box-shadow: 0 0 0 0 rgba(34,211,238,.5); }
-    70%  { box-shadow: 0 0 0 18px rgba(34,211,238,0); }
+    70%  { box-shadow: 0 0 0 20px rgba(34,211,238,0); }
     100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
   }
 
@@ -141,61 +249,80 @@
   .btn-demo span { position: relative; z-index: 1; }
 
   /* ============================================================
-     MODAL — full-screen on phones, centered card on desktop
+     MODAL — also fits the screen
   ============================================================ */
   .modal-overlay {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    background: rgba(3,5,12,.85);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    display: grid;
+    place-items: center;
+    padding: clamp(10px, 1.8vw, 26px);
+    background: rgba(3,5,12,.82);
+    -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
     opacity: 0;
     visibility: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     transition: opacity .3s ease, visibility .3s ease;
-    /* safe-area for notched phones */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    overflow: hidden;
   }
   .modal-overlay.open { opacity: 1; visibility: visible; }
 
   .modal {
     position: relative;
     width: 100%;
-    max-width: 720px;
-    max-height: 100dvh;
+    max-width: 940px;
+    max-height: calc(100dvh - clamp(20px, 3.6vw, 52px));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 38px 24px 32px;
-    background: linear-gradient(160deg, #0c1429 0%, #070b18 100%);
-    border: 1px solid rgba(59,130,246,.3);
-    border-radius: 0;
-    box-shadow: 0 50px 100px -35px rgba(0,0,0,.95);
-    transform: translateY(30px);
+    overscroll-behavior: contain;
+    padding: clamp(24px, 2.8vw, 40px);
+    border-radius: clamp(16px, 1.6vw, 24px);
+    border: 1px solid rgba(59,130,246,.30);
+    background:
+      radial-gradient(120% 100% at 0% 0%,   rgba(37,99,235,.22) 0%, transparent 55%),
+      radial-gradient(110% 110% at 100% 100%, rgba(124,58,237,.20) 0%, transparent 58%),
+      linear-gradient(165deg, #0c1429 0%, #070b18 100%);
+    box-shadow:
+      0 60px 120px -40px rgba(0,0,0,.95),
+      0 0 0 1px rgba(255,255,255,.03) inset;
+    transform: translateY(26px) scale(.975);
     opacity: 0;
     transition: transform .38s cubic-bezier(.2,.8,.2,1), opacity .38s ease;
   }
-  .modal-overlay.open .modal { transform: translateY(0); opacity: 1; }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); opacity: 1; }
 
-  /* top accent line */
+  /* accent line */
   .modal::before {
     content: "";
     position: absolute;
-    top: 0; left: 12%; right: 12%;
+    top: 0; left: 10%; right: 10%;
     height: 2px;
-    border-radius: 0 0 4px 4px;
     background: linear-gradient(90deg, transparent, var(--cyan), var(--blue), var(--violet), transparent);
   }
 
+  /* subtle grid inside modal */
+  .modal::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(59,91,169,.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,91,169,.16) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 75%);
+            mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 0%, transparent 75%);
+    opacity: .7;
+  }
+  .modal > * { position: relative; z-index: 1; }
+
   .modal-close {
     position: absolute;
-    top: 14px; right: 14px;
+    top: clamp(12px, 1.4vw, 18px);
+    right: clamp(12px, 1.4vw, 18px);
+    z-index: 3;
     width: 42px; height: 42px;
     display: grid;
     place-items: center;
@@ -206,8 +333,8 @@
     border: 1px solid var(--line);
     border-radius: 50%;
     cursor: pointer;
-    transition: background .2s, color .2s, transform .2s;
     touch-action: manipulation;
+    transition: background .2s, color .2s, transform .2s;
   }
   .modal-close:hover {
     background: rgba(248,113,113,.14);
@@ -215,38 +342,39 @@
     transform: rotate(90deg);
   }
 
+  .modal-head { margin-bottom: clamp(16px, 2vh, 24px); padding-right: 46px; }
+
   .modal h2 {
-    margin: 0 0 8px;
-    font-size: 25px;
+    font-size: clamp(21px, 2.1vw, 27px);
     font-weight: 800;
     letter-spacing: -.3px;
+    line-height: 1.15;
     background: linear-gradient(120deg, #ffffff, #9fc0ff);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   .modal .sub {
-    margin: 0 0 24px;
-    font-size: 14.5px;
-    line-height: 1.6;
+    margin-top: 7px;
+    font-size: clamp(13px, 1.1vw, 14.5px);
+    line-height: 1.55;
     color: var(--muted);
   }
 
   /* ============================================================
      FORM
   ============================================================ */
-  .field-row {
+  .form-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(12px, 1.3vw, 18px);
   }
-
-  .field { margin-bottom: 17px; }
+  .field { display: flex; flex-direction: column; }
+  .field.full { grid-column: 1 / -1; }
 
   .field label {
-    display: block;
-    margin-bottom: 7px;
-    font-size: 13px;
+    margin-bottom: 6px;
+    font-size: clamp(11.5px, .95vw, 13px);
     font-weight: 600;
     letter-spacing: .3px;
     color: #b8cbe8;
@@ -257,17 +385,17 @@
   .field select,
   .field textarea {
     width: 100%;
-    padding: 14px 15px;
+    padding: clamp(11px, 1.2vh, 14px) 15px;
     font-family: inherit;
-    font-size: 16px; /* 16px prevents iOS zoom on focus */
+    font-size: 16px;
     color: #e8f1ff;
     background: #0d1730;
     border: 1px solid var(--line);
     border-radius: 11px;
     outline: none;
-    transition: border-color .2s, box-shadow .2s, background .2s;
     -webkit-appearance: none;
-    appearance: none;
+            appearance: none;
+    transition: border-color .2s, box-shadow .2s, background .2s;
   }
   .field input::placeholder,
   .field textarea::placeholder { color: #5d7099; }
@@ -279,7 +407,6 @@
     background: #101d3c;
     box-shadow: 0 0 0 3px rgba(34,211,238,.16);
   }
-
   .field input:user-invalid,
   .field select:user-invalid,
   .field textarea:user-invalid {
@@ -297,50 +424,50 @@
   }
   .field select option { background: #0b1226; color: #e2ecff; }
 
-  .field textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
+  .field textarea { resize: none; min-height: 76px; line-height: 1.5; }
 
   #otherWrap { display: none; }
-  #otherWrap.show { display: block; animation: fadeSlide .32s ease both; }
+  #otherWrap.show { display: flex; animation: fadeSlide .3s ease both; }
   @keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(-8px); }
+    from { opacity: 0; transform: translateY(-6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* submit */
+  .form-actions { margin-top: clamp(14px, 1.8vh, 22px); }
+
   .btn-submit {
     width: 100%;
-    margin-top: 6px;
-    padding: 16px;
+    padding: clamp(13px, 1.5vh, 16px);
     font-family: inherit;
-    font-size: 16px;
+    font-size: clamp(15px, 1.2vw, 16px);
     font-weight: 700;
-    letter-spacing: .4px;
+    letter-spacing: .3px;
     color: #04121f;
     background: linear-gradient(135deg, var(--cyan), var(--blue) 55%, var(--violet));
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 14px 34px -12px rgba(59,130,246,.9);
-    transition: transform .2s, box-shadow .2s, opacity .2s;
     touch-action: manipulation;
-    min-height: 54px;
+    min-height: 52px;
+    box-shadow: 0 16px 38px -14px rgba(59,130,246,.95);
+    transition: transform .2s, box-shadow .2s, opacity .2s;
   }
   .btn-submit:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 18px 42px -12px rgba(59,130,246,1);
+    box-shadow: 0 20px 46px -14px rgba(59,130,246,1);
   }
   .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
-  .form-status { margin-top: 16px; font-size: 14.5px; line-height: 1.55; }
+  .form-status { margin-top: 14px; font-size: 14px; line-height: 1.5; }
   .form-status.success {
-    padding: 13px 16px;
+    padding: 12px 15px;
     background: rgba(34,197,94,.12);
     border: 1px solid rgba(34,197,94,.42);
     border-radius: 10px;
     color: #86efac;
   }
   .form-status.error {
-    padding: 13px 16px;
+    padding: 12px 15px;
     background: rgba(248,113,113,.12);
     border: 1px solid rgba(248,113,113,.42);
     border-radius: 10px;
@@ -348,98 +475,75 @@
   }
 
   .form-note {
-    margin-top: 14px;
+    margin-top: 12px;
     font-size: 12.5px;
     color: #5d7099;
     text-align: center;
   }
 
   /* ============================================================
-     RESPONSIVE BREAKPOINTS
+     RESPONSIVE
   ============================================================ */
 
-  /* ---------- PHONES: portrait ---------- */
-  @media (max-width: 767px) and (orientation: portrait) {
-    .page {
-      gap: 24px;
-      padding: 20px 14px 36px;
-      justify-content: center;
-    }
-    .modal {
-      /* full-screen takeover */
-      max-width: 100%;
-      max-height: 100dvh;
+  /* ---------- PHONES, PORTRAIT: true full-bleed ---------- */
+  @media (max-width: 860px) and (orientation: portrait) {
+    body { padding: 0; }
+    .stage {
       border-radius: 0;
-      padding: 30px 18px 28px;
       border-left: none;
       border-right: none;
+      border-top: none;
+      border-bottom: none;
+      padding-left:   max(clamp(16px, 5vw, 26px), env(safe-area-inset-left));
+      padding-right:  max(clamp(16px, 5vw, 26px), env(safe-area-inset-right));
+      padding-top:    max(18px, env(safe-area-inset-top));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    /* swap to the tall logo */
+    .logo-wide { display: none; }
+    .logo-tall { display: block; }
+
+    /* full-screen sheet modal */
+    .modal-overlay { padding: 0; place-items: stretch; }
+    .modal {
+      max-width: none;
+      max-height: 100dvh;
       min-height: 100dvh;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      padding: max(26px, env(safe-area-inset-top)) 20px max(26px, env(safe-area-inset-bottom));
+      transform: translateY(40px);
     }
-    .modal-overlay {
-      align-items: flex-start;
-    }
+    .form-grid { grid-template-columns: 1fr; }
   }
 
-  /* ---------- PHONES: landscape ---------- */
-  @media (max-width: 767px) and (orientation: landscape) {
-    .page {
-      gap: 16px;
-      padding: 16px 24px;
-      justify-content: center;
-    }
-    .logo-wrap { max-width: 680px; }
-    .modal {
-      max-width: 90vw;
-      max-height: 92dvh;
-      border-radius: 16px;
-      padding: 28px 28px 24px;
-      min-height: auto;
-    }
-    .modal-overlay { align-items: center; }
-    .field-row { grid-template-columns: 1fr 1fr; gap: 14px; }
-    .field-row .field { margin-bottom: 17px; }
+  /* ---------- PHONES, LANDSCAPE ---------- */
+  @media (max-width: 860px) and (orientation: landscape) {
+    .stage { padding: 14px 20px; }
+    .badge { padding: 6px 13px 6px 10px; font-size: 10px; }
+    .btn-demo { min-height: 46px; padding: 12px 28px; font-size: 14.5px; }
+    .cta-note { display: none; }
+    .stage-logo { margin: 4px 0; }
+
+    .modal { max-height: calc(100dvh - 20px); padding: 24px 26px; }
+    .modal h2 { font-size: 20px; }
+    .form-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field label { font-size: 11px; margin-bottom: 4px; }
+    .field input, .field select { padding: 10px 13px; }
+    .field textarea { min-height: 56px; }
   }
 
-  /* ---------- TABLETS & DESKTOP: landscape ---------- */
-  @media (min-width: 768px) {
-    .page {
-      gap: 36px;
-      padding: 40px 24px 56px;
-      justify-content: center;
-    }
-    .logo-wrap { max-width: 1200px; }
-    .modal {
-      max-width: 720px;
-      border-radius: 22px;
-      padding: 40px 36px 34px;
-      max-height: 92vh;
-      min-height: auto;
-    }
-    .modal-overlay { align-items: center; }
-    /* two-column rows on desktop */
-    .field-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+  /* ---------- SHORT SCREENS ---------- */
+  @media (max-height: 520px) {
+    .badge { display: none; }
+    .cta-note { display: none; }
+    .btn-demo { min-height: 44px; padding: 11px 26px; font-size: 14px; }
   }
-
-  /* ---------- LARGE DESKTOP ---------- */
-  @media (min-width: 1200px) {
-    .page { gap: 44px; }
-    .modal { max-width: 740px; }
-  }
-
-  /* ---------- SHORT LANDSCAPE (phone rotated) ---------- */
-  @media (max-height: 500px) and (orientation: landscape) {
-    .page { gap: 10px; padding: 10px 16px; }
-    .logo-wrap { max-width: 520px; }
-    .btn-demo { padding: 13px 30px; font-size: 15px; min-height: 46px; }
-    .modal { padding: 22px 20px 18px; }
-    .modal h2 { font-size: 21px; }
-    .modal .sub { font-size: 13px; margin-bottom: 16px; }
-    .field { margin-bottom: 12px; }
-    .field input, .field select { padding: 11px 13px; }
-    .btn-submit { padding: 13px; font-size: 15px; min-height: 46px; }
+  @media (max-height: 640px) and (orientation: portrait) {
+    .badge { padding: 6px 13px 6px 10px; font-size: 10px; }
   }
 
   /* ============================================================
@@ -448,40 +552,42 @@
   @keyframes spin     { to { transform: rotate(360deg); } }
   @keyframes spinRev  { to { transform: rotate(-360deg); } }
   @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes riseIn   { from { opacity:0; transform: translateY(22px);} to { opacity:1; transform: translateY(0);} }
-  @keyframes drawG    { from { stroke-dashoffset: 280; } to { stroke-dashoffset: 0; } }
-  @keyframes travel   { 0%{stroke-dashoffset:280;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
+  @keyframes riseIn   { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+  @keyframes drawG    { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }
+  @keyframes travel   { 0%{stroke-dashoffset:300;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
   @keyframes growX    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  @keyframes drift    { 0%,100%{transform:translate(0,0);} 50%{transform:translate(34px,-26px);} }
-  @keyframes drift2   { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-40px,22px);} }
-  @keyframes drift3   { 0%,100%{transform:translate(0,0);} 50%{transform:translate(26px,30px);} }
 
-  .blob-a { animation: drift  22s ease-in-out infinite; }
-  .blob-b { animation: drift2 28s ease-in-out infinite; }
-  .blob-c { animation: drift3 25s ease-in-out infinite; }
+  .logo { --ox: 270px; --oy: 170px; }          /* wide emblem centre */
+  .logo-tall { --ox: 380px; --oy: 280px; }     /* tall emblem centre */
 
   .emblem { animation: fadeIn 1s ease both; }
 
-  .ring-a { transform-box: view-box; transform-origin: 290px 200px; animation: spin 28s linear infinite; }
-  .ring-b { transform-box: view-box; transform-origin: 290px 200px; animation: spinRev 20s linear infinite; }
-  .orbit  { transform-box: view-box; transform-origin: 290px 200px; animation: spin 9s linear infinite; }
+  .ring-a, .ring-b, .orbit {
+    transform-box: view-box;
+    transform-origin: var(--ox) var(--oy);
+  }
+  .ring-a { animation: spin 28s linear infinite; }
+  .ring-b { animation: spinRev 20s linear infinite; }
+  .orbit  { animation: spin 9s linear infinite; }
 
-  .gmark  { stroke-dasharray: 280; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
-  .gpulse { stroke-dasharray: 46 234; opacity: 0; animation: travel 3.4s linear 2.2s infinite; }
+  .gmark  { stroke-dasharray: 300; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
+  .gpulse { stroke-dasharray: 50 250; opacity: 0; animation: travel 3.6s linear 2.2s infinite; }
 
   .rise-1 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .45s both; }
   .rise-2 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .60s both; }
   .rise-3 { animation: riseIn .9s cubic-bezier(.2,.8,.2,1) .75s both; }
 
-  .rule { transform-box: fill-box; transform-origin: left center; animation: growX .85s cubic-bezier(.2,.8,.2,1) 1s both; }
+  .rule {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: growX .85s cubic-bezier(.2,.8,.2,1) 1s both;
+  }
+  .rule-c { transform-origin: center; }
 
   @media (prefers-reduced-motion: reduce) {
-    .blob-a, .blob-b, .blob-c,
-    .ring-a, .ring-b, .orbit,
-    .gmark, .gpulse,
-    .rise-1, .rise-2, .rise-3,
-    .rule, .emblem,
-    .btn-demo::before, .btn-demo::after { animation: none !important; }
+    .blob, .ring-a, .ring-b, .orbit, .gmark, .gpulse,
+    .rise-1, .rise-2, .rise-3, .rule, .emblem,
+    .btn-demo::before, .btn-demo::after, .badge .dot { animation: none !important; }
     .gpulse { opacity: 0 !important; }
   }
 </style>
@@ -489,171 +595,200 @@
 
 <body>
 
-<div class="page">
+<!-- ============================================================
+     SHARED SVG DEFS (referenced by both logo variants)
+============================================================ -->
+<svg class="svg-defs" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"    stop-color="#3b82f6"/>
+      <stop offset="0.45" stop-color="#22d3ee"/>
+      <stop offset="1"    stop-color="#8b5cf6"/>
+    </linearGradient>
 
-  <!-- ================= LOGO ================= -->
-  <div class="logo-wrap">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400"
-       role="img" aria-labelledby="gsmTitle gsmDesc" text-rendering="geometricPrecision">
-    <title id="gsmTitle">GSM Solution</title>
-    <desc id="gsmDesc">GSM Solution — custom software development for order management, inventory management, attendance, quotation and GST billing systems.</desc>
+    <linearGradient id="wordGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"    stop-color="#ffffff"/>
+      <stop offset="0.65" stop-color="#e2ecff"/>
+      <stop offset="1"    stop-color="#9fc0ff"/>
+    </linearGradient>
 
-    <defs>
-      <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0"   stop-color="#05070f"/>
-        <stop offset="0.5" stop-color="#0a1024"/>
-        <stop offset="1"   stop-color="#04060d"/>
-      </linearGradient>
+    <linearGradient id="ruleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   stop-color="#22d3ee"/>
+      <stop offset="0.55" stop-color="#3b82f6"/>
+      <stop offset="1"   stop-color="#8b5cf6" stop-opacity="0"/>
+    </linearGradient>
 
-      <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0"    stop-color="#3b82f6"/>
-        <stop offset="0.45" stop-color="#22d3ee"/>
-        <stop offset="1"    stop-color="#8b5cf6"/>
-      </linearGradient>
+    <radialGradient id="coreGlow">
+      <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.34"/>
+      <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.09"/>
+      <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
 
-      <linearGradient id="wordGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0"    stop-color="#ffffff"/>
-        <stop offset="0.65" stop-color="#e2ecff"/>
-        <stop offset="1"    stop-color="#9fc0ff"/>
-      </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
 
-      <linearGradient id="ruleGrad" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0"   stop-color="#22d3ee"/>
-        <stop offset="0.5" stop-color="#3b82f6"/>
-        <stop offset="1"   stop-color="#8b5cf6" stop-opacity="0"/>
-      </linearGradient>
+    <filter id="nodeGlow" x="-200%" y="-200%" width="500%" height="500%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
 
-      <radialGradient id="blobBlue">
-        <stop offset="0" stop-color="#2563eb" stop-opacity="0.50"/>
-        <stop offset="1" stop-color="#2563eb" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="blobCyan">
-        <stop offset="0" stop-color="#06b6d4" stop-opacity="0.40"/>
-        <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="blobViolet">
-        <stop offset="0" stop-color="#7c3aed" stop-opacity="0.42"/>
-        <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
-      </radialGradient>
-      <radialGradient id="coreGlow">
-        <stop offset="0"   stop-color="#22d3ee" stop-opacity="0.30"/>
-        <stop offset="0.6" stop-color="#3b82f6" stop-opacity="0.08"/>
-        <stop offset="1"   stop-color="#3b82f6" stop-opacity="0"/>
-      </radialGradient>
+<!-- ============================================================
+     STAGE
+============================================================ -->
+<main class="stage">
 
-      <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
-        <path d="M44 0H0v44" fill="none" stroke="#3b5ba9" stroke-width="1"/>
-      </pattern>
-      <radialGradient id="gridFadeGrad">
-        <stop offset="0"   stop-color="#ffffff" stop-opacity="0.50"/>
-        <stop offset="0.6" stop-color="#ffffff" stop-opacity="0.10"/>
-        <stop offset="1"   stop-color="#ffffff" stop-opacity="0"/>
-      </radialGradient>
-      <mask id="gridMask">
-        <rect width="1200" height="400" fill="url(#gridFadeGrad)"/>
-      </mask>
+  <!-- ambient -->
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+  <div class="blob blob-c" aria-hidden="true"></div>
 
-      <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-        <feGaussianBlur stdDeviation="5" result="b"/>
-        <feMerge>
-          <feMergeNode in="b"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
+  <!-- top badge -->
+  <header class="stage-top">
+    <span class="badge">
+      <span class="dot"></span> Custom Software Studio
+    </span>
+  </header>
 
-      <filter id="nodeGlow" x="-200%" y="-200%" width="500%" height="500%">
-        <feGaussianBlur stdDeviation="4" result="b"/>
-        <feMerge>
-          <feMergeNode in="b"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </defs>
+  <!-- logo (both variants live here; CSS swaps them) -->
+  <div class="stage-logo">
 
-    <rect width="1200" height="400" fill="url(#bgGrad)"/>
-    <rect width="1200" height="400" fill="url(#grid)" mask="url(#gridMask)" opacity="0.55"/>
+    <!-- ============ WIDE / LANDSCAPE LOGO ============ -->
+    <svg class="logo logo-wide" viewBox="0 0 1100 340" preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
+      <g class="emblem">
+        <circle cx="270" cy="170" r="140" fill="url(#coreGlow)"/>
 
-    <g class="blob-a"><circle cx="290" cy="200" r="300" fill="url(#blobBlue)"/></g>
-    <g class="blob-b"><circle cx="1030" cy="30" r="320" fill="url(#blobViolet)"/></g>
-    <g class="blob-c"><circle cx="760" cy="420" r="300" fill="url(#blobCyan)"/></g>
+        <g class="ring-a">
+          <circle cx="270" cy="170" r="118" fill="none" stroke="url(#brandGrad)"
+                  stroke-width="2" stroke-linecap="round" stroke-dasharray="22 32" opacity="0.9"/>
+        </g>
 
-    <g class="emblem">
-      <circle cx="290" cy="200" r="130" fill="url(#coreGlow)"/>
+        <g class="ring-b">
+          <circle cx="270" cy="170" r="98" fill="none" stroke="#22d3ee"
+                  stroke-width="2" stroke-linecap="round" stroke-dasharray="2 14" opacity="0.6"/>
+        </g>
 
-      <g class="ring-a">
-        <circle cx="290" cy="200" r="96" fill="none"
-                stroke="url(#brandGrad)" stroke-width="2"
-                stroke-linecap="round" stroke-dasharray="20 30" opacity="0.9"/>
+        <circle cx="270" cy="170" r="78" fill="#0a1229" fill-opacity="0.9"
+                stroke="url(#brandGrad)" stroke-width="1.6" stroke-opacity="0.75"/>
+
+        <path class="gmark"
+              d="M 306.61 126.37 A 56.95 56.95 0 1 0 310.27 210.27 L 310.27 170 L 277.43 170"
+              fill="none" stroke="url(#brandGrad)" stroke-width="13"
+              stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+        <path class="gpulse"
+              d="M 306.61 126.37 A 56.95 56.95 0 1 0 310.27 210.27 L 310.27 170 L 277.43 170"
+              fill="none" stroke="#a5f3fc" stroke-width="13"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <g class="orbit">
+          <circle cx="388" cy="170" r="8" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="388" cy="170" r="3.4" fill="#ffffff"/>
+        </g>
       </g>
 
-      <g class="ring-b">
-        <circle cx="290" cy="200" r="79" fill="none"
-                stroke="#22d3ee" stroke-width="2"
-                stroke-linecap="round" stroke-dasharray="2 13" opacity="0.6"/>
+      <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
+        <text class="rise-1" x="440" y="144" font-size="114" font-weight="800"
+              letter-spacing="0.5" fill="url(#wordGrad)">GSM</text>
+
+        <text class="rise-2" x="446" y="196" font-size="28" font-weight="600"
+              letter-spacing="13" fill="#22d3ee">SOLUTION</text>
+
+        <rect class="rule" x="446" y="222" width="300" height="3" rx="1.5" fill="url(#ruleGrad)"/>
+
+        <text class="rise-3" x="446" y="258" font-size="14.5" font-weight="500"
+              letter-spacing="1.4" fill="#8ea6d4">Order · Inventory · Attendance · Billing · Quotation · GST</text>
+      </g>
+    </svg>
+
+    <!-- ============ TALL / PORTRAIT LOGO ============ -->
+    <svg class="logo logo-tall" viewBox="0 0 760 820" preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GSM Solution">
+      <g class="emblem">
+        <circle cx="380" cy="280" r="175" fill="url(#coreGlow)"/>
+
+        <g class="ring-a">
+          <circle cx="380" cy="280" r="148" fill="none" stroke="url(#brandGrad)"
+                  stroke-width="2.4" stroke-linecap="round" stroke-dasharray="26 38" opacity="0.9"/>
+        </g>
+
+        <g class="ring-b">
+          <circle cx="380" cy="280" r="123" fill="none" stroke="#22d3ee"
+                  stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2 16" opacity="0.6"/>
+        </g>
+
+        <circle cx="380" cy="280" r="98" fill="#0a1229" fill-opacity="0.9"
+                stroke="url(#brandGrad)" stroke-width="1.8" stroke-opacity="0.75"/>
+
+        <path class="gmark"
+              d="M 426.00 225.18 A 71.56 71.56 0 1 0 430.60 330.60 L 430.60 280 L 389.33 280"
+              fill="none" stroke="url(#brandGrad)" stroke-width="17"
+              stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+
+        <path class="gpulse"
+              d="M 426.00 225.18 A 71.56 71.56 0 1 0 430.60 330.60 L 430.60 280 L 389.33 280"
+              fill="none" stroke="#a5f3fc" stroke-width="17"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <g class="orbit">
+          <circle cx="528" cy="280" r="9" fill="#22d3ee" filter="url(#nodeGlow)"/>
+          <circle cx="528" cy="280" r="3.8" fill="#ffffff"/>
+        </g>
       </g>
 
-      <circle cx="290" cy="200" r="63" fill="#0a1229" fill-opacity="0.88"
-              stroke="url(#brandGrad)" stroke-width="1.5" stroke-opacity="0.7"/>
+      <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+         text-anchor="middle">
+        <text class="rise-1" x="380" y="562" font-size="128" font-weight="800"
+              letter-spacing="1" fill="url(#wordGrad)">GSM</text>
 
-      <path class="gmark"
-            d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
-            fill="none" stroke="url(#brandGrad)" stroke-width="11"
-            stroke-linecap="round" stroke-linejoin="round"
-            filter="url(#glow)"/>
+        <text class="rise-2" x="380" y="622" font-size="30" font-weight="600"
+              letter-spacing="16" fill="#22d3ee">SOLUTION</text>
 
-      <path class="gpulse"
-            d="M 319.57 164.76 A 46 46 0 1 0 322.53 232.53 L 322.53 200 L 296 200"
-            fill="none" stroke="#a5f3fc" stroke-width="11"
-            stroke-linecap="round" stroke-linejoin="round"/>
+        <rect class="rule rule-c" x="220" y="650" width="320" height="3" rx="1.5" fill="url(#ruleGrad)"/>
 
-      <g class="orbit">
-        <circle cx="386" cy="200" r="7" fill="#22d3ee" filter="url(#nodeGlow)"/>
-        <circle cx="386" cy="200" r="3" fill="#ffffff"/>
+        <text class="rise-3" x="380" y="700" font-size="17" font-weight="500"
+              letter-spacing="1.4" fill="#8ea6d4">Order · Inventory · Attendance</text>
+        <text class="rise-3" x="380" y="730" font-size="17" font-weight="500"
+              letter-spacing="1.4" fill="#8ea6d4">Billing · Quotation · GST</text>
       </g>
-    </g>
+    </svg>
 
-    <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
-      <text class="rise-1" x="422" y="178" font-size="106" font-weight="800"
-            letter-spacing="1" fill="url(#wordGrad)">GSM</text>
-
-      <text class="rise-2" x="428" y="230" font-size="30" font-weight="600"
-            letter-spacing="13" fill="#22d3ee">SOLUTION</text>
-
-      <rect class="rule" x="428" y="258" width="300" height="3" rx="1.5" fill="url(#ruleGrad)"/>
-
-      <text class="rise-3" x="428" y="296" font-size="16" font-weight="500"
-            letter-spacing="1.6" fill="#8ea6d4">Order · Inventory · Attendance · Billing · Quotation · GST</text>
-    </g>
-  </svg>
   </div>
 
-  <!-- ================= REQUEST DEMO BUTTON ================= -->
-  <button id="demoBtn" class="btn-demo" type="button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-    <span>Request Demo</span>
-  </button>
+  <!-- CTA -->
+  <footer class="stage-cta">
+    <button id="demoBtn" class="btn-demo" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Request Demo</span>
+    </button>
+    <p class="cta-note">Free 30-minute walkthrough · No obligation</p>
+  </footer>
 
-</div>
+</main>
 
-<!-- ================= MODAL ================= -->
+<!-- ============================================================
+     MODAL
+============================================================ -->
 <div class="modal-overlay" id="modalOverlay" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 
     <button class="modal-close" id="modalClose" type="button" aria-label="Close dialog">&times;</button>
 
-    <h2 id="modalTitle">Request a Free Demo</h2>
-    <p class="sub">
-      Tell us what you need and we'll show you a live walkthrough of the right
-      GSM Solution software for your business.
-    </p>
+    <div class="modal-head">
+      <h2 id="modalTitle">Request a Free Demo</h2>
+      <p class="sub">Tell us what you need and we'll walk you through the right GSM Solution software for your business.</p>
+    </div>
 
     <!-- ============================================================
-         FORM — Web3Forms integration
-         Access key: 00b18b52-f17b-4739-8720-309d2cb0d711
-         ⚠️ Make sure you have VERIFIED gsmmargao@gmail.com on web3forms.com
+         WEB3FORMS — key already filled in
+         ⚠️ Make sure gsmmargao@gmail.com is VERIFIED on web3forms.com
     ============================================================ -->
     <form id="demoForm" novalidate>
 
@@ -662,7 +797,8 @@
       <input type="hidden" name="from_name"  value="GSM Solution Website">
       <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
-      <div class="field-row">
+      <div class="form-grid">
+
         <div class="field">
           <label for="name">Full Name <span class="req">*</span></label>
           <input id="name" name="name" type="text" placeholder="John Doe"
@@ -674,9 +810,7 @@
           <input id="email" name="email" type="email" placeholder="you@company.com"
                  autocomplete="email" required>
         </div>
-      </div>
 
-      <div class="field-row">
         <div class="field">
           <label for="phone">Contact Number <span class="req">*</span></label>
           <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210"
@@ -696,15 +830,18 @@
             <option value="Other">Other</option>
           </select>
         </div>
+
+        <div class="field full" id="otherWrap">
+          <label for="otherDetails">Describe your requirement <span class="req">*</span></label>
+          <textarea id="otherDetails" name="requirement_details" rows="3"
+                    placeholder="Briefly tell us what you need…"></textarea>
+        </div>
+
       </div>
 
-      <div class="field" id="otherWrap">
-        <label for="otherDetails">Describe your requirement <span class="req">*</span></label>
-        <textarea id="otherDetails" name="requirement_details" rows="3"
-                  placeholder="Briefly tell us what you need…"></textarea>
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
       </div>
-
-      <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
 
       <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
 
@@ -737,15 +874,15 @@
     lastFocused = document.activeElement;
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-    // Focus first field after animation
-    setTimeout(() => document.getElementById("name").focus(), 150);
+    setTimeout(function () {
+      const first = document.getElementById("name");
+      if (first) first.focus({ preventScroll: true });
+    }, 150);
   }
 
   function closeModal() {
     overlay.classList.remove("open");
     overlay.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
     if (lastFocused) lastFocused.focus();
   }
 
@@ -763,10 +900,10 @@
   /* focus trap */
   overlay.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
-    const focusables = overlay.querySelectorAll(
+    const nodes = overlay.querySelectorAll(
       'button, input:not([type="hidden"]), select, textarea, [href], [tabindex]:not([tabindex="-1"])'
     );
-    const list = Array.prototype.filter.call(focusables, function (el) {
+    const list = Array.prototype.filter.call(nodes, function (el) {
       return el.offsetParent !== null && !el.disabled;
     });
     if (!list.length) return;
@@ -781,38 +918,28 @@
     }
   });
 
-  /* ---------- "Other" conditional field ---------- */
+  /* ---------- "Other" conditional ---------- */
   category.addEventListener("change", function () {
     const isOther = category.value === "Other";
     otherWrap.classList.toggle("show", isOther);
     otherText.required = isOther;
-    if (isOther) {
-      setTimeout(() => otherText.focus(), 120);
-    } else {
-      otherText.value = "";
-    }
+    if (isOther) setTimeout(function(){ otherText.focus(); }, 120);
+    else otherText.value = "";
   });
 
   /* ---------- submit ---------- */
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // native validation
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
+    if (!form.checkValidity()) { form.reportValidity(); return; }
 
-    // guard: ensure key is set
     const keyField = form.querySelector('input[name="access_key"]');
     if (!keyField.value || keyField.value.length < 10) {
       statusBox.className = "form-status error";
-      statusBox.textContent =
-        "⚠️ Setup incomplete: the Web3Forms access key is missing or invalid.";
+      statusBox.textContent = "⚠️ Setup incomplete: Web3Forms access key is missing or invalid.";
       return;
     }
 
-    // loading state
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = "Sending…";
@@ -834,10 +961,8 @@
         otherText.required = false;
 
         statusBox.className = "form-status success";
-        statusBox.textContent =
-          "✅ Thank you! Your demo request has been sent. We'll contact you within 24 hours.";
+        statusBox.textContent = "✅ Thank you! Your demo request has been sent. We'll contact you within 24 hours.";
 
-        // auto-close after 4s
         setTimeout(closeModal, 4000);
       } else {
         throw new Error(data.message || "Submission failed.");
@@ -846,7 +971,7 @@
       statusBox.className = "form-status error";
       statusBox.textContent =
         "❌ " + (err.message || "Something went wrong.") +
-        " Please try again, or email us directly at gsmmargao@gmail.com.";
+        " Please try again, or email us at gsmmargao@gmail.com.";
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
