@@ -530,7 +530,6 @@
 
           <div class="field">
             <label for="phone">Contact Number <span class="req">*</span></label>
-            <!-- FIX: escaped ( and ) so the v-flag regex compiles -->
             <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210"
                    autocomplete="tel" required pattern="[0-9\(\)\+\-\s]{7,20}">
           </div>
@@ -607,20 +606,20 @@
   "use strict";
 
   /* ============================================================
-     CONFIG — read carefully
+     CONFIG
      ------------------------------------------------------------
-     API_BASE          : URL of your verification backend.
-                         "" = same origin as this page.
-     OFFLINE_FALLBACK  : true  = if the backend isn't reachable,
-                                 generate the code in the browser
-                                 and show it in the status area.
-                                 ⚠ FOR TESTING ONLY — not real
-                                 email verification.
-                         false = require a real backend.
+     ✅ STEP 30 + 31 APPLIED BELOW:
+
+     API_BASE          : Your live Render backend URL.
+                         ⚠ Replace "gsm-verification" with your
+                         actual Render service name if different.
+     OFFLINE_FALLBACK  : false → real verification is required.
+                         The frontend will NOT generate codes
+                         in the browser anymore.
      RESEND_WAIT       : seconds before "Resend code" unlocks.
   ============================================================ */
-  const API_BASE         = "";
-  const OFFLINE_FALLBACK = true;
+  const API_BASE         = "https://gsm-verification.onrender.com";
+  const OFFLINE_FALLBACK = false;
   const WEB3FORMS        = "https://api.web3forms.com/submit";
   const RESEND_WAIT      = 60;
 
@@ -656,7 +655,7 @@
   let resendTimer  = null;
   let busy         = false;
   let verifying    = false;
-  let offlineCode  = null;   // set when running without a backend
+  let offlineCode  = null;   // only used if OFFLINE_FALLBACK is enabled
 
   /* ============================================================
      HELPERS
@@ -686,7 +685,6 @@
   }
 
   function isValidPhone(v) {
-    // JS validation — no `v` flag issues here
     return /^[0-9+\-\s()]{7,20}$/.test(v.trim());
   }
 
@@ -820,7 +818,6 @@
 
     if (!isResend) {
       if (!form.checkValidity()) { form.reportValidity(); return; }
-      // Extra JS phone validation (belt-and-braces)
       if (!isValidPhone(phoneInput.value)) {
         setStatus("error", "Please enter a valid phone number (7–20 digits, may include + - ( ) spaces).");
         phoneInput.focus();
@@ -847,7 +844,6 @@
         });
         data = await res.json().catch(function () { return {}; });
       } catch (netErr) {
-        // Network error OR backend absent
         if (OFFLINE_FALLBACK) { useOffline = true; }
         else throw new Error("Could not reach the verification server.");
       }
@@ -861,7 +857,7 @@
       }
 
       if (useOffline) {
-        /* ---------- OFFLINE TEST MODE ---------- */
+        /* ---------- OFFLINE TEST MODE (disabled when OFFLINE_FALLBACK = false) ---------- */
         offlineCode = String(Math.floor(100000 + Math.random() * 900000));
         console.log("%c[GSM offline mode] verification code: " + offlineCode,
                     "color:#22d3ee;font-weight:bold;font-size:14px");
@@ -917,7 +913,7 @@
       let verified = false;
 
       if (offlineCode) {
-        /* ---------- OFFLINE TEST MODE ---------- */
+        /* ---------- OFFLINE TEST MODE (only if OFFLINE_FALLBACK was true) ---------- */
         if (code !== offlineCode) {
           codeInputs.forEach(function (el) { el.classList.add("invalid"); });
           throw new Error("Incorrect code. Please try again.");
