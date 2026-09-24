@@ -39,6 +39,8 @@
     padding: var(--pad);
   }
 
+  [hidden] { display: none !important; }
+
   /* ============================================================
      STAGE — blue box that always fits the screen
   ============================================================ */
@@ -102,15 +104,10 @@
   @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(-7vmin,4vmin) scale(1.06);} }
   @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1);}  50%{transform:translate(4vmin,5vmin) scale(1.1);} }
 
-  /* layering above the background */
   .stage > *:not(.blob) { position: relative; z-index: 1; }
 
   /* ---------- badge row ---------- */
-  .stage-top {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: center;
-  }
+  .stage-top { flex: 0 0 auto; display: flex; justify-content: center; }
 
   .badge {
     display: inline-flex;
@@ -141,9 +138,9 @@
     50%     { opacity: .45; transform: scale(.72); }
   }
 
-  /* ---------- LOGO AREA — flex-centred, SVG fills it ---------- */
+  /* ---------- LOGO AREA ---------- */
   .logo-area {
-    flex: 1 1 0;              /* grow/shrink, base 0 */
+    flex: 1 1 0;
     min-height: 0;
     position: relative;
     display: flex;
@@ -151,16 +148,7 @@
     justify-content: center;
     overflow: hidden;
   }
-
-  .logo-area > svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-  }
-
-  /* visibility swap — high specificity so it always wins */
+  .logo-area > svg { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; }
   .logo-area > svg.logo-wide { display: block; }
   .logo-area > svg.logo-tall { display: none; }
 
@@ -172,7 +160,6 @@
     align-items: center;
     gap: clamp(8px, 1.2vh, 14px);
   }
-
   .cta-note {
     font-size: clamp(11px, 1.05vw, 13px);
     color: #6f86b3;
@@ -388,6 +375,7 @@
     border-color: rgba(248,113,113,.7);
     box-shadow: 0 0 0 3px rgba(248,113,113,.13);
   }
+  .field input:disabled { opacity: .6; cursor: not-allowed; }
 
   .field select {
     padding-right: 44px;
@@ -433,7 +421,117 @@
   }
   .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
+  /* ---------- verification step ---------- */
+  .verify-panel { animation: fadeSlide .35s ease both; }
+
+  .verify-note {
+    text-align: center;
+    font-size: clamp(13px, 1.1vw, 14.5px);
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: clamp(16px, 2.2vh, 22px);
+  }
+  .verify-note strong { color: #cfe1ff; font-weight: 600; word-break: break-all; }
+
+  .code-row {
+    display: flex;
+    justify-content: center;
+    gap: clamp(6px, 1.2vw, 12px);
+    margin-bottom: clamp(16px, 2.2vh, 22px);
+  }
+
+  .code-input {
+    width: clamp(38px, 11.5vw, 56px);
+    height: clamp(50px, 7.5vh, 64px);
+    padding: 0;
+    text-align: center;
+    font-family: inherit;
+    font-size: clamp(19px, 2.6vw, 26px);
+    font-weight: 700;
+    color: #e8f1ff;
+    background: #0d1730;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    outline: none;
+    -webkit-appearance: none;
+            appearance: none;
+    caret-color: var(--cyan);
+    transition: border-color .2s, box-shadow .2s, background .2s, transform .15s;
+  }
+  .code-input:focus {
+    border-color: var(--cyan);
+    background: #101d3c;
+    box-shadow: 0 0 0 3px rgba(34,211,238,.16);
+    transform: translateY(-2px);
+  }
+  .code-input.filled { border-color: rgba(34,211,238,.55); }
+  .code-input.invalid {
+    border-color: rgba(248,113,113,.8);
+    box-shadow: 0 0 0 3px rgba(248,113,113,.15);
+    animation: shake .35s ease;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-6px); }
+    75%     { transform: translateX(6px); }
+  }
+
+  .verify-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(10px, 2vw, 22px);
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .link-btn {
+    background: none;
+    border: none;
+    padding: 6px 4px;
+    font-family: inherit;
+    font-size: clamp(12.5px, 1vw, 13.5px);
+    font-weight: 600;
+    color: var(--cyan);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    touch-action: manipulation;
+  }
+  .link-btn:hover:not(:disabled) { color: #a5f3fc; }
+  .link-btn:disabled { color: #5d7099; cursor: not-allowed; text-decoration: none; }
+
+  /* ---------- success panel ---------- */
+  .success-panel {
+    text-align: center;
+    padding: clamp(10px, 1.6vh, 18px) 0;
+    animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    margin: 0 auto clamp(12px, 1.8vh, 18px);
+    display: grid; place-items: center;
+    font-size: 32px; font-weight: 700;
+    color: #04121f;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    border-radius: 50%;
+    box-shadow: 0 0 0 8px rgba(34,211,238,.12), 0 16px 40px -14px rgba(59,130,246,.9);
+  }
+  .success-panel h3 {
+    font-size: clamp(19px, 1.8vw, 23px);
+    margin-bottom: 8px;
+    color: #eaf2ff;
+  }
+  .success-panel p {
+    font-size: clamp(13px, 1.1vw, 14.5px);
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  .success-panel strong { color: #a5f3fc; font-weight: 600; word-break: break-word; }
+
+  /* ---------- status / note ---------- */
   .form-status { margin-top: 14px; font-size: 14px; line-height: 1.5; }
+  .form-status:empty { display: none; }
   .form-status.success {
     padding: 12px 15px;
     background: rgba(34,197,94,.12);
@@ -447,6 +545,13 @@
     border: 1px solid rgba(248,113,113,.42);
     border-radius: 10px;
     color: #fca5a5;
+  }
+  .form-status.info {
+    padding: 12px 15px;
+    background: rgba(34,211,238,.10);
+    border: 1px solid rgba(34,211,238,.35);
+    border-radius: 10px;
+    color: #a5f3fc;
   }
 
   .form-note {
@@ -470,7 +575,6 @@
       padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
 
-    /* swap to tall logo */
     .logo-area > svg.logo-wide { display: none; }
     .logo-area > svg.logo-tall { display: block; }
 
@@ -521,26 +625,18 @@
   @keyframes travelTall{ 0%{stroke-dashoffset:440;opacity:0;} 8%{opacity:.95;} 88%{opacity:.95;} 100%{stroke-dashoffset:0;opacity:0;} }
   @keyframes growX    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  /* wide logo — emblem centred at (290,200) */
   .logo-wide .ring-a,
   .logo-wide .ring-b,
-  .logo-wide .orbit {
-    transform-box: view-box;
-    transform-origin: 290px 200px;
-  }
+  .logo-wide .orbit { transform-box: view-box; transform-origin: 290px 200px; }
   .logo-wide .ring-a { animation: spin 28s linear infinite; }
   .logo-wide .ring-b { animation: spinRev 20s linear infinite; }
   .logo-wide .orbit  { animation: spin 9s linear infinite; }
   .logo-wide .gmark  { stroke-dasharray: 290; animation: drawG 1.6s cubic-bezier(.2,.8,.2,1) .25s both; }
   .logo-wide .gpulse { stroke-dasharray: 48 242; opacity: 0; animation: travel 3.6s linear 2.2s infinite; }
 
-  /* tall logo — emblem centred at (300,220) */
   .logo-tall .ring-a,
   .logo-tall .ring-b,
-  .logo-tall .orbit {
-    transform-box: view-box;
-    transform-origin: 300px 220px;
-  }
+  .logo-tall .orbit { transform-box: view-box; transform-origin: 300px 220px; }
   .logo-tall .ring-a { animation: spin 28s linear infinite; }
   .logo-tall .ring-b { animation: spinRev 20s linear infinite; }
   .logo-tall .orbit  { animation: spin 9s linear infinite; }
@@ -564,7 +660,8 @@
   @media (prefers-reduced-motion: reduce) {
     .blob, .ring-a, .ring-b, .orbit, .gmark, .gpulse,
     .rise-1, .rise-2, .rise-3, .rise-4, .rule, .emblem,
-    .btn-demo::before, .btn-demo::after, .badge .dot { animation: none !important; }
+    .btn-demo::before, .btn-demo::after, .badge .dot,
+    .verify-panel, .success-panel, .code-input.invalid { animation: none !important; }
     .gpulse { opacity: 0 !important; }
   }
 </style>
@@ -574,23 +671,20 @@
 
 <main class="stage">
 
-  <!-- ambient blobs -->
   <div class="blob blob-a" aria-hidden="true"></div>
   <div class="blob blob-b" aria-hidden="true"></div>
   <div class="blob blob-c" aria-hidden="true"></div>
 
-  <!-- badge -->
   <header class="stage-top">
     <span class="badge">
       <span class="dot"></span> Custom Software Studio
     </span>
   </header>
 
-  <!-- logo area — flex centred -->
   <div class="logo-area">
 
     <!-- ============================================================
-         WIDE / LANDSCAPE LOGO  —  defs inline
+         WIDE / LANDSCAPE LOGO
     ============================================================ -->
     <svg class="logo-wide" viewBox="0 0 1200 400"
          preserveAspectRatio="xMidYMid meet"
@@ -627,7 +721,6 @@
         </filter>
       </defs>
 
-      <!-- emblem -->
       <g class="emblem">
         <circle cx="290" cy="200" r="130" fill="url(#wCoreGlow)"/>
 
@@ -663,7 +756,6 @@
         </g>
       </g>
 
-      <!-- wordmark -->
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif">
         <text class="rise-1" x="422" y="178" font-size="106" font-weight="800"
               letter-spacing="1" fill="url(#wWordGrad)">GSM</text>
@@ -679,7 +771,7 @@
     </svg>
 
     <!-- ============================================================
-         TALL / PORTRAIT LOGO — 1.5× scaled copy, defs inline
+         TALL / PORTRAIT LOGO
     ============================================================ -->
     <svg class="logo-tall" viewBox="0 0 600 800"
          preserveAspectRatio="xMidYMid meet"
@@ -716,7 +808,6 @@
         </filter>
       </defs>
 
-      <!-- emblem (scaled 1.5×) -->
       <g class="emblem">
         <circle cx="300" cy="220" r="195" fill="url(#tCoreGlow)"/>
 
@@ -752,7 +843,6 @@
         </g>
       </g>
 
-      <!-- wordmark (centred) -->
       <g font-family="Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
          text-anchor="middle">
         <text class="rise-1" x="300" y="530" font-size="118" font-weight="800"
@@ -772,7 +862,6 @@
 
   </div>
 
-  <!-- CTA -->
   <footer class="stage-cta">
     <button id="demoBtn" class="btn-demo" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
@@ -801,60 +890,110 @@
 
     <form id="demoForm" novalidate>
 
+      <!-- hidden config for Web3Forms -->
       <input type="hidden" name="access_key" value="00b18b52-f17b-4739-8720-309d2cb0d711">
       <input type="hidden" name="subject"    value="New Demo Request — GSM Solution">
       <input type="hidden" name="from_name"  value="GSM Solution Website">
       <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
-      <div class="form-grid">
+      <!-- ===================== STEP 1 — DETAILS ===================== -->
+      <div id="stepOne">
+        <div class="form-grid">
 
-        <div class="field">
-          <label for="name">Full Name <span class="req">*</span></label>
-          <input id="name" name="name" type="text" placeholder="John Doe"
-                 autocomplete="name" required>
+          <div class="field">
+            <label for="name">Full Name <span class="req">*</span></label>
+            <input id="name" name="name" type="text" placeholder="John Doe"
+                   autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label for="email">Email ID <span class="req">*</span></label>
+            <input id="email" name="email" type="email" placeholder="you@company.com"
+                   autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label for="phone">Contact Number <span class="req">*</span></label>
+            <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210"
+                   autocomplete="tel" required pattern="[0-9+\-\s()]{7,20}">
+          </div>
+
+          <div class="field">
+            <label for="category">Category <span class="req">*</span></label>
+            <select id="category" name="category" required>
+              <option value="" selected disabled>Select a category</option>
+              <option value="Order Management System">Order Management System</option>
+              <option value="Billing System">Billing System</option>
+              <option value="Inventory Management System">Inventory Management System</option>
+              <option value="Attendance System">Attendance System</option>
+              <option value="Quotation">Quotation</option>
+              <option value="GST Billing">GST Billing</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="field full" id="otherWrap">
+            <label for="otherDetails">Describe your requirement <span class="req">*</span></label>
+            <textarea id="otherDetails" name="requirement_details" rows="3"
+                      placeholder="Briefly tell us what you need…"></textarea>
+          </div>
+
         </div>
 
-        <div class="field">
-          <label for="email">Email ID <span class="req">*</span></label>
-          <input id="email" name="email" type="email" placeholder="you@company.com"
-                 autocomplete="email" required>
+        <div class="form-actions">
+          <button type="submit" class="btn-submit" id="sendCodeBtn">Send Verification Code</button>
         </div>
-
-        <div class="field">
-          <label for="phone">Contact Number <span class="req">*</span></label>
-          <input id="phone" name="phone" type="tel" placeholder="+91 98765 43210"
-                 autocomplete="tel" required pattern="[0-9+\-\s()]{7,20}">
-        </div>
-
-        <div class="field">
-          <label for="category">Category <span class="req">*</span></label>
-          <select id="category" name="category" required>
-            <option value="" selected disabled>Select a category</option>
-            <option value="Order Management System">Order Management System</option>
-            <option value="Billing System">Billing System</option>
-            <option value="Inventory Management System">Inventory Management System</option>
-            <option value="Attendance System">Attendance System</option>
-            <option value="Quotation">Quotation</option>
-            <option value="GST Billing">GST Billing</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="field full" id="otherWrap">
-          <label for="otherDetails">Describe your requirement <span class="req">*</span></label>
-          <textarea id="otherDetails" name="requirement_details" rows="3"
-                    placeholder="Briefly tell us what you need…"></textarea>
-        </div>
-
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn-submit" id="submitBtn">Submit Request</button>
+      <!-- ===================== STEP 2 — VERIFY ===================== -->
+      <div id="stepTwo" hidden>
+        <div class="verify-panel">
+
+          <p class="verify-note">
+            We've sent a 6-digit verification code to<br>
+            <strong id="sentTo">your email</strong>
+          </p>
+
+          <div class="code-row" id="codeRow">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   autocomplete="one-time-code" aria-label="Verification digit 1">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   aria-label="Verification digit 2">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   aria-label="Verification digit 3">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   aria-label="Verification digit 4">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   aria-label="Verification digit 5">
+            <input class="code-input" type="text" inputmode="numeric" maxlength="1"
+                   aria-label="Verification digit 6">
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-submit" id="submitBtn">Verify &amp; Submit Request</button>
+          </div>
+
+          <div class="verify-actions">
+            <button type="button" class="link-btn" id="resendBtn">Resend code</button>
+            <button type="button" class="link-btn" id="changeEmailBtn">Change email</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ===================== SUCCESS ===================== -->
+      <div id="successPanel" class="success-panel" hidden>
+        <div class="success-icon">✓</div>
+        <h3>Request Sent!</h3>
+        <p>
+          Thanks <strong id="successName">there</strong> — your email is verified and your demo
+          request has reached us. We'll reply to <strong id="successEmail"></strong> within 24 hours.
+        </p>
       </div>
 
       <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
 
-      <p class="form-note">We usually reply within 24 hours. Your details are never shared.</p>
+      <p class="form-note" id="formNote">We usually reply within 24 hours. Your details are never shared.</p>
     </form>
   </div>
 </div>
@@ -863,31 +1002,137 @@
 (function () {
   "use strict";
 
-  const overlay   = document.getElementById("modalOverlay");
-  const openBtn   = document.getElementById("demoBtn");
-  const closeBtn  = document.getElementById("modalClose");
-  const form      = document.getElementById("demoForm");
-  const statusBox = document.getElementById("formStatus");
-  const submitBtn = document.getElementById("submitBtn");
-  const category  = document.getElementById("category");
-  const otherWrap = document.getElementById("otherWrap");
-  const otherText = document.getElementById("otherDetails");
+  /* ============================================================
+     CONFIG
+     Leave API_BASE empty ("") if this page is served from the same
+     domain as the backend. Otherwise set it to your backend URL,
+     e.g. "https://gsm-solution-api.onrender.com"
+  ============================================================ */
+  const API_BASE   = "";
+  const WEB3FORMS  = "https://api.web3forms.com/submit";
+  const RESEND_WAIT = 60;   // seconds before "Resend code" unlocks
 
-  let lastFocused = null;
+  /* ---------------- element refs ---------------- */
+  const overlay      = document.getElementById("modalOverlay");
+  const openBtn      = document.getElementById("demoBtn");
+  const closeBtn     = document.getElementById("modalClose");
+  const form         = document.getElementById("demoForm");
 
+  const stepOne      = document.getElementById("stepOne");
+  const stepTwo      = document.getElementById("stepTwo");
+  const successPanel = document.getElementById("successPanel");
+  const formNote     = document.getElementById("formNote");
+  const statusBox    = document.getElementById("formStatus");
+
+  const sendCodeBtn  = document.getElementById("sendCodeBtn");
+  const submitBtn    = document.getElementById("submitBtn");
+  const resendBtn    = document.getElementById("resendBtn");
+  const changeBtn    = document.getElementById("changeEmailBtn");
+
+  const nameInput    = document.getElementById("name");
+  const emailInput   = document.getElementById("email");
+  const category     = document.getElementById("category");
+  const otherWrap    = document.getElementById("otherWrap");
+  const otherText    = document.getElementById("otherDetails");
+
+  const sentTo       = document.getElementById("sentTo");
+  const codeInputs   = Array.prototype.slice.call(document.querySelectorAll(".code-input"));
+
+  /* ---------------- state ---------------- */
+  let lastFocused    = null;
+  let resendTimer    = null;
+  let busy           = false;   // a network request is in flight
+  let verifying      = false;   // verify step already running
+
+  /* ============================================================
+     SMALL HELPERS
+  ============================================================ */
+  function setStatus(type, msg) {
+    statusBox.className = "form-status" + (type ? " " + type : "");
+    statusBox.textContent = msg || "";
+  }
+
+  function setBtnLoading(btn, loading, text) {
+    btn.disabled = loading;
+    if (text) btn.textContent = text;
+  }
+
+  function setView(view) {
+    // view: "form" | "verify" | "success"
+    stepOne.hidden      = view !== "form";
+    stepTwo.hidden      = view !== "verify";
+    successPanel.hidden = view !== "success";
+    formNote.hidden     = view === "success";
+
+    if (view === "verify") {
+      setTimeout(function () { codeInputs[0].focus(); }, 120);
+    }
+  }
+
+  function getCode() {
+    return codeInputs.map(function (i) { return i.value; }).join("");
+  }
+
+  function clearCode() {
+    codeInputs.forEach(function (i) {
+      i.value = "";
+      i.classList.remove("filled", "invalid");
+    });
+  }
+
+  function stopResendTimer() {
+    if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+    resendBtn.disabled = false;
+    resendBtn.textContent = "Resend code";
+  }
+
+  function startResendTimer(seconds) {
+    stopResendTimer();
+    let left = seconds;
+    resendBtn.disabled = true;
+    resendBtn.textContent = "Resend code in " + left + "s";
+
+    resendTimer = setInterval(function () {
+      left -= 1;
+      if (left <= 0) {
+        stopResendTimer();
+      } else {
+        resendBtn.textContent = "Resend code in " + left + "s";
+      }
+    }, 1000);
+  }
+
+  /* ============================================================
+     RESET — called every time the modal opens
+     (this is what clears previously typed / autofilled data)
+  ============================================================ */
+  function resetForm() {
+    stopResendTimer();
+    form.reset();                     // clears every visible field
+    otherWrap.classList.remove("show");
+    otherText.required = false;
+    clearCode();
+    setStatus("", "");
+    setView("form");
+  }
+
+  /* ============================================================
+     OPEN / CLOSE MODAL
+  ============================================================ */
   function openModal() {
     lastFocused = document.activeElement;
+    resetForm();                      // <-- fresh, empty form every time
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden", "false");
     setTimeout(function () {
-      const first = document.getElementById("name");
-      if (first) first.focus({ preventScroll: true });
-    }, 150);
+      if (nameInput) nameInput.focus({ preventScroll: true });
+    }, 160);
   }
 
   function closeModal() {
     overlay.classList.remove("open");
     overlay.setAttribute("aria-hidden", "true");
+    stopResendTimer();
     if (lastFocused) lastFocused.focus();
   }
 
@@ -902,6 +1147,7 @@
     if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
   });
 
+  /* focus trap */
   overlay.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
     const nodes = overlay.querySelectorAll(
@@ -922,63 +1168,252 @@
     }
   });
 
+  /* ============================================================
+     CATEGORY → "Other" textarea
+  ============================================================ */
   category.addEventListener("change", function () {
     const isOther = category.value === "Other";
     otherWrap.classList.toggle("show", isOther);
     otherText.required = isOther;
-    if (isOther) setTimeout(function(){ otherText.focus(); }, 120);
+    if (isOther) setTimeout(function () { otherText.focus(); }, 120);
     else otherText.value = "";
   });
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+  /* ============================================================
+     CODE INPUT BEHAVIOUR (auto-advance, paste, backspace)
+  ============================================================ */
+  codeInputs.forEach(function (input, i) {
 
-    if (!form.checkValidity()) { form.reportValidity(); return; }
+    input.addEventListener("input", function () {
+      const digits = input.value.replace(/\D/g, "");
+      input.value = digits.slice(-1);
+      input.classList.toggle("filled", !!input.value);
+      input.classList.remove("invalid");
 
-    const keyField = form.querySelector('input[name="access_key"]');
-    if (!keyField.value || keyField.value.length < 10) {
-      statusBox.className = "form-status error";
-      statusBox.textContent = "⚠️ Setup incomplete: Web3Forms access key is missing or invalid.";
+      if (input.value && i < codeInputs.length - 1) {
+        codeInputs[i + 1].focus();
+      }
+      if (getCode().length === 6) verifyAndSubmit();
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Backspace" && !input.value && i > 0) {
+        e.preventDefault();
+        codeInputs[i - 1].focus();
+        codeInputs[i - 1].value = "";
+        codeInputs[i - 1].classList.remove("filled");
+      }
+      if (e.key === "ArrowLeft"  && i > 0) codeInputs[i - 1].focus();
+      if (e.key === "ArrowRight" && i < codeInputs.length - 1) codeInputs[i + 1].focus();
+    });
+
+    input.addEventListener("paste", function (e) {
+      e.preventDefault();
+      const raw = (e.clipboardData || window.clipboardData).getData("text") || "";
+      const digits = raw.replace(/\D/g, "").slice(0, 6);
+      if (!digits) return;
+
+      digits.split("").forEach(function (d, idx) {
+        if (codeInputs[idx]) {
+          codeInputs[idx].value = d;
+          codeInputs[idx].classList.add("filled");
+        }
+      });
+
+      const next = Math.min(digits.length, codeInputs.length - 1);
+      codeInputs[next].focus();
+
+      if (digits.length === 6) verifyAndSubmit();
+    });
+
+    input.addEventListener("focus", function () { input.select(); });
+  });
+
+  /* ============================================================
+     STEP 1 → SEND VERIFICATION CODE
+  ============================================================ */
+  async function sendCode(isResend) {
+    if (busy) return;
+
+    if (!isResend) {
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+    }
+
+    busy = true;
+    setStatus("", "");
+
+    const btn      = isResend ? resendBtn : sendCodeBtn;
+    const idleText = isResend ? "Resend code" : "Send Verification Code";
+    setBtnLoading(btn, true, isResend ? "Sending…" : "Sending code…");
+
+    try {
+      const res = await fetch(API_BASE + "/api/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:  nameInput.value.trim(),
+          email: emailInput.value.trim()
+        })
+      });
+
+      const data = await res.json().catch(function () { return {}; });
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Could not send the verification code.");
+      }
+
+      if (!isResend) {
+        sentTo.textContent = emailInput.value.trim();
+        clearCode();
+        setView("verify");
+      }
+
+      startResendTimer(data.cooldown || RESEND_WAIT);
+      setStatus("success", "📧 Verification code sent. Please check your inbox (and the spam folder).");
+
+    } catch (err) {
+      setStatus("error", "❌ " + (err.message || "Something went wrong.") + " Please try again.");
+      if (isResend) {
+        resendBtn.disabled = false;
+        resendBtn.textContent = "Resend code";
+      }
+    } finally {
+      busy = false;
+      if (!isResend) {
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = idleText;
+      }
+    }
+  }
+
+  /* ============================================================
+     STEP 2 → VERIFY CODE, THEN SUBMIT THE LEAD
+  ============================================================ */
+  async function verifyAndSubmit() {
+    if (busy || verifying) return;
+
+    const code = getCode();
+    if (code.length !== 6) {
+      setStatus("error", "Please enter all 6 digits of the code.");
       return;
     }
 
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Sending…";
-    statusBox.className = "form-status";
-    statusBox.textContent = "";
+    busy = true;
+    verifying = true;
+    setStatus("", "");
+    setBtnLoading(submitBtn, true, "Verifying…");
+
+    const clientEmail = emailInput.value.trim();
+    const clientName  = nameInput.value.trim();
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      /* ---- 1. Ask the backend to check the code ---- */
+      const vRes = await fetch(API_BASE + "/api/verify-code", {
         method: "POST",
-        headers: { Accept: "application/json" },
-        body: new FormData(form)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: clientEmail, code: code })
       });
 
-      const data = await response.json();
+      const vData = await vRes.json().catch(function () { return {}; });
 
-      if (response.ok && data.success) {
-        form.reset();
-        otherWrap.classList.remove("show");
-        otherText.required = false;
+      if (!vRes.ok || !vData.success) {
+        codeInputs.forEach(function (el) { el.classList.add("invalid"); });
+        throw new Error(vData.message || "Incorrect or expired code.");
+      }
 
-        statusBox.className = "form-status success";
-        statusBox.textContent = "✅ Thank you! Your demo request has been sent. We'll contact you within 24 hours.";
+      /* ---- 2. Code is valid → send the lead ---- */
+      setBtnLoading(submitBtn, true, "Submitting…");
 
-        setTimeout(closeModal, 4000);
-      } else {
+      const fd = new FormData(form);
+      fd.append("email_verified", "yes");
+      fd.append("verification_token", vData.token || "");
+
+      const res = await fetch(WEB3FORMS, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: fd
+      });
+
+      const data = await res.json().catch(function () { return {}; });
+
+      if (!res.ok || !data.success) {
         throw new Error(data.message || "Submission failed.");
       }
+
+      /* ---- 3. Success ---- */
+      stopResendTimer();
+      setStatus("", "");
+      document.getElementById("successName").textContent  = clientName  || "there";
+      document.getElementById("successEmail").textContent = clientEmail;
+      setView("success");
+
+      // clear everything so it's blank next time
+      form.reset();
+      otherWrap.classList.remove("show");
+      otherText.required = false;
+      clearCode();
+
+      setTimeout(function () {
+        if (overlay.classList.contains("open")) closeModal();
+      }, 6000);
+
     } catch (err) {
-      statusBox.className = "form-status error";
-      statusBox.textContent =
-        "❌ " + (err.message || "Something went wrong.") +
-        " Please try again, or email us at gsmmargao@gmail.com.";
+      const msg = err.message || "Something went wrong.";
+
+      if (msg.toLowerCase().indexOf("code") !== -1) {
+        // wrong / expired code → let them retype
+        setTimeout(function () {
+          clearCode();
+          codeInputs[0].focus();
+        }, 700);
+      }
+
+      setStatus("error", "❌ " + msg + " If this keeps happening, email us at gsmmargao@gmail.com.");
     } finally {
+      busy = false;
+      verifying = false;
       submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
+      submitBtn.textContent = "Verify & Submit Request";
     }
+  }
+
+  /* ============================================================
+     FORM SUBMIT ROUTER
+     - step 1 visible → send code
+     - step 2 visible → verify + submit
+  ============================================================ */
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (stepTwo.hidden) sendCode(false);
+    else verifyAndSubmit();
   });
+
+  /* ============================================================
+     BUTTONS
+  ============================================================ */
+  sendCodeBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    sendCode(false);
+  });
+
+  submitBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    verifyAndSubmit();
+  });
+
+  resendBtn.addEventListener("click", function () {
+    if (resendBtn.disabled || busy) return;
+    sendCode(true);
+  });
+
+  changeBtn.addEventListener("click", function () {
+    stopResendTimer();
+    clearCode();
+    setStatus("", "");
+    setView("form");
+    setTimeout(function () { emailInput.focus(); }, 120);
+  });
+
 })();
 </script>
 
